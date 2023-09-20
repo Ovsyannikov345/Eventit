@@ -12,6 +12,7 @@ public partial class EventitDbContext : DbContext
     public EventitDbContext(DbContextOptions<EventitDbContext> options)
         : base(options)
     {
+        Database.EnsureCreated();
     }
 
     public virtual DbSet<Chat> Chats { get; set; }
