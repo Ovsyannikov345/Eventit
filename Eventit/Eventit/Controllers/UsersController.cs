@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Eventit.Data;
 using Eventit.Models;
@@ -24,23 +19,34 @@ namespace Eventit.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserGetDto>>> GetUsers()
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
-            return await _context.Users.ToListAsync();
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+
+            return await _context.Users.Select(user => new UserGetDto()
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Patronymic = user.Patronymic,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                DateOfBirth = user.DateOfBirth,
+                RegistrationDate = user.RegistrationDate,
+            }).ToListAsync();
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<UserGetDto>> GetUser(int id)
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)
@@ -48,13 +54,23 @@ namespace Eventit.Controllers
                 return NotFound();
             }
 
-            return user;
+            return new UserGetDto()
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Patronymic = user.Patronymic,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                DateOfBirth = user.DateOfBirth,
+                RegistrationDate = user.RegistrationDate,
+            };
         }
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)
         {
+            // TODO.
             if (id != user.Id)
             {
                 return BadRequest();
@@ -83,24 +99,28 @@ namespace Eventit.Controllers
 
         // POST: api/Users
         [HttpPost]
-        public async Task<ActionResult<UserPostDto>> PostUser(UserPostDto userDto)
+        public async Task<ActionResult<User>> PostUser(UserPostDto userDto)
         {
-          if (_context.Users == null)
-          {
-              return Problem("Entity set 'EventitDbContext.Users'  is null.");
-          }
+            if (_context.Users == null)
+            {
+                return Problem("Entity set 'EventitDbContext.Users'  is null.");
+            }
 
             User user = new User()
             {
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
+                Patronymic = userDto.Patronymic,
                 Email = userDto.Email,
-                //
+                PhoneNumber = userDto.PhoneNumber,
+                DateOfBirth = userDto.DateOfBirth,
+                RegistrationDate = userDto.RegistrationDate,
             };
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new UserPostDto(), user);
+            return CreatedAtAction(nameof(GetUser), new User(), user);
         }
 
         // DELETE: api/Users/5
@@ -111,7 +131,9 @@ namespace Eventit.Controllers
             {
                 return NotFound();
             }
+
             var user = await _context.Users.FindAsync(id);
+
             if (user == null)
             {
                 return NotFound();
