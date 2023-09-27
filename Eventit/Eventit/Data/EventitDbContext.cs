@@ -43,6 +43,8 @@ public partial class EventitDbContext : DbContext
 
     public virtual DbSet<UserProfilePicture> UserProfilePictures { get; set; }
 
+    public virtual DbSet<Notification> Notifications { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Chat>(entity =>
