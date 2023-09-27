@@ -1,6 +1,6 @@
 ﻿namespace Eventit.Models
 {
-    public class Notification
+    public class SupportRequest
     {
         public int Id { get; set; }
 
@@ -10,7 +10,7 @@
 
         public DateTime CreationDate { get; set; }
 
-        public int UserId {  get; set; }
+        public int UserId { get; set; }
 
         public virtual User User { get; set; } = null!;
     }

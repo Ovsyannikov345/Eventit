@@ -45,6 +45,8 @@ public partial class EventitDbContext : DbContext
 
     public virtual DbSet<Notification> Notifications { get; set; }
 
+    public virtual DbSet<SupportRequest> SupportRequests { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Chat>(entity =>
