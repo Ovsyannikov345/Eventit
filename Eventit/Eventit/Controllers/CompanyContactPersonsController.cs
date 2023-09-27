@@ -28,6 +28,7 @@ namespace Eventit.Controllers
 
             return await _context.CompanyContactPeople.Select(person => new CompanyContactPersonGetDto()
             {
+                Id = person.Id,
                 FirstName = person.FirstName,
                 LastName = person.LastName,
                 Patronymic = person.Patronymic,
@@ -54,6 +55,7 @@ namespace Eventit.Controllers
 
             return new CompanyContactPersonGetDto()
             {
+                Id = companyContactPerson.Id,
                 FirstName = companyContactPerson.FirstName,
                 LastName = companyContactPerson.LastName,
                 Patronymic = companyContactPerson.Patronymic,
@@ -64,64 +66,55 @@ namespace Eventit.Controllers
 
         // PUT: api/CompanyContactPersons/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCompanyContactPerson(int id, CompanyContactPerson companyContactPerson)
+        public async Task<IActionResult> PutCompanyContactPerson(int id, CompanyContactPersonPutDto request)
         {
-            // TODO.
-            if (id != companyContactPerson.Id)
+            CompanyContactPerson? person = await _context.CompanyContactPeople.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (person is null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(companyContactPerson).State = EntityState.Modified;
+            person.FirstName = request.FirstName;
+            person.LastName = request.LastName;
+            person.Patronymic = request.Patronymic;
+            person.PhoneNumber = request.PhoneNumber;
+            person.Email = request.Email;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CompanyContactPersonExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         // POST: api/CompanyContactPersons
         [HttpPost]
-        public async Task<ActionResult<CompanyContactPerson>> PostCompanyContactPerson(CompanyContactPerson companyContactPerson)
+        public async Task<ActionResult<CompanyContactPerson>> PostCompanyContactPerson(CompanyContactPersonPostDto request)
         {
-            // TODO.
             if (_context.CompanyContactPeople == null)
             {
-                return Problem("Entity set 'EventitDbContext.CompanyContactPeople'  is null.");
+                return Problem("Entity set 'EventitDbContext.CompanyContactPeople' is null.");
             }
 
-            _context.CompanyContactPeople.Add(companyContactPerson);
+            Company? company = await _context.Companies.FirstOrDefaultAsync(comp => comp.Id == request.CompanyId);
 
-            try
+            if (company is null)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (CompanyContactPersonExists(companyContactPerson.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
-            return CreatedAtAction("GetCompanyContactPerson", new { id = companyContactPerson.Id }, companyContactPerson);
+            _context.CompanyContactPeople.Add(new CompanyContactPerson()
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Patronymic = request.Patronymic,
+                PhoneNumber = request.PhoneNumber,
+                Email = request.Email,
+                IdNavigation = company,
+            });
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
         // DELETE: api/CompanyContactPersons/5
@@ -141,14 +134,10 @@ namespace Eventit.Controllers
             }
 
             _context.CompanyContactPeople.Remove(companyContactPerson);
+
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool CompanyContactPersonExists(int id)
-        {
-            return (_context.CompanyContactPeople?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
