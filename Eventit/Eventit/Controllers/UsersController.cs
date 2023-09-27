@@ -28,6 +28,7 @@ namespace Eventit.Controllers
 
             return await _context.Users.Select(user => new UserGetDto()
             {
+                Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Patronymic = user.Patronymic,
@@ -56,6 +57,7 @@ namespace Eventit.Controllers
 
             return new UserGetDto()
             {
+                Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Patronymic = user.Patronymic,
@@ -68,31 +70,25 @@ namespace Eventit.Controllers
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(int id, UserPutDto request)
         {
-            // TODO.
-            if (id != user.Id)
+            User? user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
+
+            if (user is null)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.Patronymic = request.Patronymic;
+            user.Email = request.Email;
+            user.PhoneNumber = request.PhoneNumber;
+            user.Password = request.Password;
+            user.DateOfBirth = request.DateOfBirth;
+            user.RegistrationDate = request.RegistrationDate;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
@@ -113,6 +109,7 @@ namespace Eventit.Controllers
                 Patronymic = userDto.Patronymic,
                 Email = userDto.Email,
                 PhoneNumber = userDto.PhoneNumber,
+                Password = userDto.Password,
                 DateOfBirth = userDto.DateOfBirth,
                 RegistrationDate = userDto.RegistrationDate,
             };
@@ -143,11 +140,6 @@ namespace Eventit.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool UserExists(int id)
-        {
-            return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
