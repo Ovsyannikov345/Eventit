@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Eventit.Data;
 using Eventit.Models;
+using Eventit.DataTranferObjects;
 
 namespace Eventit.Controllers
 {
@@ -18,23 +19,31 @@ namespace Eventit.Controllers
 
         // GET: api/Notifications
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Notification>>> GetNotifications()
+        public async Task<ActionResult<IEnumerable<NotificationGetDto>>> GetNotifications()
         {
-          if (_context.Notifications == null)
-          {
-              return NotFound();
-          }
-            return await _context.Notifications.ToListAsync();
+            if (_context.Notifications == null)
+            {
+                return NotFound();
+            }
+
+            return await _context.Notifications.Select(notification => new NotificationGetDto()
+            {
+                Id = notification.Id,
+                Title = notification.Title,
+                Description = notification.Description,
+                CreationDate = notification.CreationDate,
+            }).ToListAsync();
         }
 
         // GET: api/Notifications/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Notification>> GetNotification(int id)
+        public async Task<ActionResult<NotificationGetDto>> GetNotification(int id)
         {
-          if (_context.Notifications == null)
-          {
-              return NotFound();
-          }
+            if (_context.Notifications == null)
+            {
+                return NotFound();
+            }
+
             var notification = await _context.Notifications.FindAsync(id);
 
             if (notification == null)
@@ -42,51 +51,56 @@ namespace Eventit.Controllers
                 return NotFound();
             }
 
-            return notification;
+            return new NotificationGetDto()
+            {
+                Id = notification.Id,
+                Title = notification.Title,
+                Description = notification.Description,
+                CreationDate = notification.CreationDate,
+            };
         }
 
         // PUT: api/Notifications/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutNotification(int id, Notification notification)
+        public async Task<IActionResult> PutNotification(NotificationDto request)
         {
-            if (id != notification.Id)
+            Notification? notification = await _context.Notifications.FirstOrDefaultAsync(notif => notif.Id == id);
+
+            if (notification == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(notification).State = EntityState.Modified;
+            notification.Title = request.Title;
+            notification.Description = request.Description;
+            notification.CreationDate = request.CreationDate;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!NotificationExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         // POST: api/Notifications
         [HttpPost]
-        public async Task<ActionResult<Notification>> PostNotification(Notification notification)
+        public async Task<ActionResult<Notification>> PostNotification(NotificationDto request)
         {
-          if (_context.Notifications == null)
-          {
-              return Problem("Entity set 'EventitDbContext.Notifications'  is null.");
-          }
+            if (_context.Notifications == null)
+            {
+                return Problem("Entity set 'EventitDbContext.Notifications'  is null.");
+            }
+
+            Notification notification = new Notification()
+            {
+                Title = request.Title,
+                Description = request.Description,
+                CreationDate = request.CreationDate,
+            };
+
             _context.Notifications.Add(notification);
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetNotification", new { id = notification.Id }, notification);
+            return CreatedAtAction(nameof(GetNotification), new { id = notification.Id }, notification);
         }
 
         // DELETE: api/Notifications/5
@@ -97,7 +111,9 @@ namespace Eventit.Controllers
             {
                 return NotFound();
             }
+
             var notification = await _context.Notifications.FindAsync(id);
+
             if (notification == null)
             {
                 return NotFound();
@@ -107,11 +123,6 @@ namespace Eventit.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool NotificationExists(int id)
-        {
-            return (_context.Notifications?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
