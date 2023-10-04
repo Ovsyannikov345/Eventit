@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Eventit.Data;
+using Eventit.DataTranferObjects;
 using Eventit.Models;
 
 namespace Eventit.Controllers
@@ -18,23 +19,34 @@ namespace Eventit.Controllers
 
         // GET: api/Companies
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Company>>> GetCompanies()
+        public async Task<ActionResult<IEnumerable<CompanyGetDto>>> GetCompanies()
         {
-          if (_context.Companies == null)
-          {
-              return NotFound();
-          }
-            return await _context.Companies.ToListAsync();
+            if (_context.Companies == null)
+            {
+                return NotFound();
+            }
+
+            return await _context.Companies.Select(company => new CompanyGetDto()
+            {
+                Id = company.Id,
+                Name = company.Name,
+                PhoneNumber = company.PhoneNumber,
+                Email = company.Email,
+                Password = company.Password,
+                RegistrationDate = company.RegistrationDate,
+                Verified = company.Verified,
+            }).ToListAsync();
         }
 
         // GET: api/Companies/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Company>> GetCompany(int id)
+        public async Task<ActionResult<CompanyGetDto>> GetCompany(int id)
         {
-          if (_context.Companies == null)
-          {
-              return NotFound();
-          }
+            if (_context.Companies == null)
+            {
+                return NotFound();
+            }
+
             var company = await _context.Companies.FindAsync(id);
 
             if (company == null)
@@ -42,51 +54,64 @@ namespace Eventit.Controllers
                 return NotFound();
             }
 
-            return company;
+            return new CompanyGetDto()
+            {
+                Id = company.Id,
+                Name = company.Name,
+                PhoneNumber = company.PhoneNumber,
+                Email = company.Email,
+                Password = company.Password,
+                RegistrationDate = company.RegistrationDate,
+                Verified = company.Verified,
+            };
         }
 
         // PUT: api/Companies/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCompany(int id, Company company)
+        public async Task<IActionResult> PutCompany(int id, CompanyDto request)
         {
-            if (id != company.Id)
+            Company? company = await _context.Companies.FirstOrDefaultAsync(comp => comp.Id == id);
+
+            if (company is null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(company).State = EntityState.Modified;
+            company.Name = request.Name;
+            company.PhoneNumber = request.PhoneNumber;
+            company.Email = request.Email;
+            company.Password = request.Password;
+            company.RegistrationDate = request.RegistrationDate;
+            company.Verified = request.Verified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CompanyExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         // POST: api/Companies
         [HttpPost]
-        public async Task<ActionResult<Company>> PostCompany(Company company)
+        public async Task<ActionResult<Company>> PostCompany(CompanyDto request)
         {
-          if (_context.Companies == null)
-          {
-              return Problem("Entity set 'EventitDbContext.Companies'  is null.");
-          }
+            if (_context.Companies == null)
+            {
+                return Problem("Entity set 'EventitDbContext.Companies'  is null.");
+            }
+
+            Company company = new Company()
+            {
+                Name = request.Name,
+                PhoneNumber = request.PhoneNumber,
+                Email = request.Email,
+                Password = request.Password,
+                RegistrationDate = request.RegistrationDate,
+                Verified = request.Verified,
+            };
+
             _context.Companies.Add(company);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCompany", new { id = company.Id }, company);
+            return CreatedAtAction(nameof(GetCompany), new { id = company.Id }, company);
         }
 
         // DELETE: api/Companies/5
@@ -97,7 +122,9 @@ namespace Eventit.Controllers
             {
                 return NotFound();
             }
+
             var company = await _context.Companies.FindAsync(id);
+
             if (company == null)
             {
                 return NotFound();
@@ -107,11 +134,6 @@ namespace Eventit.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool CompanyExists(int id)
-        {
-            return (_context.Companies?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

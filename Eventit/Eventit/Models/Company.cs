@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Eventit.Models;
+﻿namespace Eventit.Models;
 
 public partial class Company
 {
