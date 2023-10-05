@@ -62,7 +62,7 @@ namespace Eventit.Controllers
 
         // PUT: api/Notifications/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutNotification(NotificationDto request)
+        public async Task<IActionResult> PutNotification(int id, NotificationDto request)
         {
             Notification? notification = await _context.Notifications.FirstOrDefaultAsync(notif => notif.Id == id);
 
