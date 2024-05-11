@@ -1,26 +1,31 @@
-﻿namespace Eventit.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Eventit.Models;
 
 public partial class Company
 {
     public int Id { get; set; }
 
-    public string Name { get; set; } = null!;
-
-    public string PhoneNumber { get; set; } = null!;
-
     public string Email { get; set; } = null!;
 
     public int Password { get; set; }
 
+    public string Name { get; set; } = null!;
+
     public DateTime RegistrationDate { get; set; }
 
-    public bool Verified { get; set; }
+    public string RegistrationNumber { get; set; } = null!;
 
     public virtual CompanyContactPerson? CompanyContactPerson { get; set; }
 
-    public virtual CompanyProfilePicture? CompanyProfilePicture { get; set; }
+    public virtual ICollection<Event> Events { get; set; } = new List<Event>();
 
-    public virtual ICollection<MessageSender> MessageSenders { get; set; } = new List<MessageSender>();
+    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
 
-    public virtual ICollection<Organizer> Organizers { get; set; } = new List<Organizer>();
+    public virtual ICollection<PlaceReview> PlaceReviews { get; set; } = new List<PlaceReview>();
+
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+    public virtual ICollection<SupportRequest> SupportRequests { get; set; } = new List<SupportRequest>();
 }

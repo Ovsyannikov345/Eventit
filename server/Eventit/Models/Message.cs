@@ -7,15 +7,19 @@ public partial class Message
 {
     public int Id { get; set; }
 
-    public int SenderId { get; set; }
+    public string Text { get; set; } = null!;
+
+    public DateTime CreationDate { get; set; }
 
     public int ChatId { get; set; }
 
-    public string MessageText { get; set; } = null!;
-
-    public DateTime SendingTime { get; set; }
-
     public virtual Chat Chat { get; set; } = null!;
 
-    public virtual MessageSender Sender { get; set; } = null!;
+    public int? UserId { get; set; }
+
+    public virtual User? User { get; set; } = null!;
+
+    public int? CompanyId { get; set; }
+
+    public virtual Company? Company { get; set; }
 }

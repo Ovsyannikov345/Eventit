@@ -5,6 +5,10 @@ namespace Eventit.Models;
 
 public partial class Chat
 {
+    public int Id { get; set; }
+
+    public bool IsPublic { get; set; }
+
     public int EventId { get; set; }
 
     public virtual Event Event { get; set; } = null!;

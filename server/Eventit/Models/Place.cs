@@ -7,11 +7,9 @@ public partial class Place
 {
     public int Id { get; set; }
 
+    public string Name { get; set; } = null!;
+
     public string Address { get; set; } = null!;
-
-    public decimal Rating { get; set; }
-
-    public int ReviewsCount { get; set; }
 
     public virtual ICollection<Event> Events { get; set; } = new List<Event>();
 

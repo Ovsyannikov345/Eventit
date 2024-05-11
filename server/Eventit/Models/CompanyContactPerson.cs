@@ -17,5 +17,7 @@ public partial class CompanyContactPerson
 
     public string Email { get; set; } = null!;
 
-    public virtual Company IdNavigation { get; set; } = null!;
+    public int CompanyId { get; set; }
+
+    public virtual Company Company { get; set; } = null!;
 }

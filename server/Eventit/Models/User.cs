@@ -17,19 +17,21 @@ public partial class User
 
     public string Email { get; set; } = null!;
 
-    public string Password { get; set; } = "";
+    public string Password { get; set; } = null!;
+
+    public string? Description { get; set; }
 
     public DateTime? DateOfBirth { get; set; }
 
     public DateTime RegistrationDate { get; set; }
 
+    public virtual ICollection<Event> Events { get; set; } = new List<Event>();
+
+    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+
     public virtual ICollection<EventReview> EventReviews { get; set; } = new List<EventReview>();
 
-    public virtual ICollection<MessageSender> MessageSenders { get; set; } = new List<MessageSender>();
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
-    public virtual ICollection<Organizer> Organizers { get; set; } = new List<Organizer>();
-
-    public virtual UserProfilePicture? UserProfilePicture { get; set; }
-
-    public virtual ICollection<Event> Events { get; set; } = new List<Event>();
+    public virtual ICollection<SupportRequest> SupportRequests { get; set; } = new List<SupportRequest>();
 }
