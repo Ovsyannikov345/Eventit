@@ -129,7 +129,7 @@ const CreateEventPage = () => {
             </Typography>
             <TextField type="text" placeholder="Введите плату за вход" fullWidth />
           </div>
-          <div style={{ width: "40%", marginBottom: "3vh" }}>
+          <div style={{ width: "100%", marginBottom: "3vh" }}>
             <Typography variant="body1" sx={{ marginBottom: 0, fontSize: "15px", color: "grey" }}>
               Описание
             </Typography>
