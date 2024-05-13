@@ -10,7 +10,7 @@ const App = () => {
     const theme = createTheme({
         palette: {
             primary: {
-                main: "#DDC12C",
+                main: "#729CDB",
             },
             text: {
                 main: "#000000",
