@@ -1,6 +1,10 @@
-﻿namespace Eventit.DataTranferObjects
+﻿using Eventit.Models;
+// TODO fix all namespaces
+using Server.DataTranferObjects;
+
+namespace Eventit.DataTranferObjects
 {
-    public class UserGetDto
+    public class UserDto
     {
         public int Id { get; set; }
 
@@ -14,8 +18,12 @@
 
         public string Email { get; set; } = null!;
 
+        public string? Description { get; set; }
+
         public DateTime? DateOfBirth { get; set; }
 
         public DateTime RegistrationDate { get; set; }
+
+        public ICollection<EventDto> Events { get; set; } = new List<EventDto>();
     }
 }

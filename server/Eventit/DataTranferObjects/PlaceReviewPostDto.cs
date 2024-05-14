@@ -2,14 +2,12 @@
 
 namespace Eventit.DataTranferObjects
 {
-    public class PlaceReviewDto
+    public class PlaceReviewPostDto
     {
-        public int Id { get; set; }
-
         public int Grade { get; set; }
 
         public int CompanyId { get; set; }
 
-        public CompanyDto Company { get; set; } = null!;
+        public int PlaceId { get; set; }
     }
 }
