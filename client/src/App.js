@@ -2,15 +2,15 @@ import { ThemeProvider, createTheme } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import "moment/locale/en-gb";
-import AppRouter from "./router/AppRouter";
+
+import CreateEventPage from "./components/pages/Company/CreateEventPage";
 
 const App = () => {
     // TODO set correct values.
     const theme = createTheme({
         palette: {
             primary: {
-                main: "#DDC12C",
+                main: "#729CDB",
             },
             text: {
                 main: "#000000",
@@ -42,7 +42,7 @@ const App = () => {
         <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="en-gb">
             <ThemeProvider theme={theme}>
                 <BrowserRouter>
-                    <AppRouter />
+                    <CreateEventPage />
                 </BrowserRouter>
             </ThemeProvider>
         </LocalizationProvider>
