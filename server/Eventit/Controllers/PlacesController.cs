@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Eventit.Data;
 using Eventit.DataTranferObjects;
 using Eventit.Models;
+using AutoMapper;
 
 namespace Eventit.Controllers
 {
@@ -12,116 +13,71 @@ namespace Eventit.Controllers
     {
         private readonly EventitDbContext _context;
 
-        public PlacesController(EventitDbContext context)
+        private readonly IMapper _mapper;
+
+        public PlacesController(EventitDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Places
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PlaceGetDto>>> GetPlaces()
+        public async Task<ActionResult<IEnumerable<PlacePostDto>>> GetPlaces()
         {
             if (_context.Places == null)
             {
                 return NotFound();
             }
 
-            return await _context.Places.Select(place => new PlaceGetDto()
+            List<Place> places = await _context.Places
+                .Include(p => p.PlaceReviews)
+                .ToListAsync();
+
+            List<PlaceDto> mappedPlaces = new List<PlaceDto>();
+
+            foreach (Place place in places)
             {
-                Id = place.Id,
-                Address = place.Address,
-                Rating = place.Rating,
-                ReviewsCount = place.ReviewsCount,
-            }).ToListAsync();
+                mappedPlaces.Add(_mapper.Map<PlaceDto>(place));
+            }
+
+            return Ok(mappedPlaces);
         }
 
         // GET: api/Places/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<PlaceGetDto>> GetPlace(int id)
+        public async Task<IActionResult> GetPlace(int id)
         {
             if (_context.Places == null)
             {
                 return NotFound();
             }
 
-            var place = await _context.Places.FindAsync(id);
+            var place = await _context.Places.FirstOrDefaultAsync(p => p.Id == id);
 
             if (place == null)
             {
                 return NotFound();
             }
 
-            return new PlaceGetDto()
-            {
-                Id = place.Id,
-                Address = place.Address,
-                Rating = place.Rating,
-                ReviewsCount = place.ReviewsCount,
-            };
-        }
-
-        // PUT: api/Places/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPlace(int id, PlaceDto request)
-        {
-            Place? place = await _context.Places.FirstOrDefaultAsync(place => place.Id == id);
-
-            if (place is null)
-            {
-                return NotFound();
-            }
-
-            place.Address = request.Address;
-            place.Rating = request.Rating;
-            place.ReviewsCount = request.ReviewsCount;
-
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok(_mapper.Map<PlaceDto>(place));
         }
 
         // POST: api/Places
         [HttpPost]
-        public async Task<ActionResult<Place>> PostPlace(PlaceDto request)
+        public async Task<IActionResult> PostPlace(PlacePostDto placeData)
         {
             if (_context.Places == null)
             {
                 return Problem("Entity set 'EventitDbContext.Places'  is null.");
             }
 
-            Place place = new Place()
-            {
-                Address = request.Address,
-                Rating = request.Rating,
-                ReviewsCount = request.ReviewsCount,
-            };
+            Place place = _mapper.Map<Place>(placeData);
 
             _context.Places.Add(place);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetPlace), new { id = place.Id }, place);
-        }
-
-        // DELETE: api/Places/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePlace(int id)
-        {
-            if (_context.Places == null)
-            {
-                return NotFound();
-            }
-
-            var place = await _context.Places.FindAsync(id);
-
-            if (place == null)
-            {
-                return NotFound();
-            }
-
-            _context.Places.Remove(place);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
     }
 }

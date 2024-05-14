@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Eventit.Data;
 using Eventit.DataTranferObjects;
 using Eventit.Models;
+using AutoMapper;
+using Server.DataTranferObjects;
 
 namespace Eventit.Controllers
 {
@@ -12,128 +14,81 @@ namespace Eventit.Controllers
     {
         private readonly EventitDbContext _context;
 
-        public CompaniesController(EventitDbContext context)
+        private readonly IMapper _mapper;
+
+        public CompaniesController(EventitDbContext context, IMapper mapper)
         {
             _context = context;
-        }
-
-        // GET: api/Companies
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CompanyGetDto>>> GetCompanies()
-        {
-            if (_context.Companies == null)
-            {
-                return NotFound();
-            }
-
-            return await _context.Companies.Select(company => new CompanyGetDto()
-            {
-                Id = company.Id,
-                Name = company.Name,
-                PhoneNumber = company.PhoneNumber,
-                Email = company.Email,
-                Password = company.Password,
-                RegistrationDate = company.RegistrationDate,
-                Verified = company.Verified,
-            }).ToListAsync();
+            _mapper = mapper;
         }
 
         // GET: api/Companies/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CompanyGetDto>> GetCompany(int id)
+        public async Task<ActionResult<CompanyDto>> GetCompany(int id)
         {
             if (_context.Companies == null)
             {
                 return NotFound();
             }
 
-            var company = await _context.Companies.FindAsync(id);
+            var company = await _context.Companies
+                .Include(c => c.CompanyContactPerson)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             if (company == null)
             {
                 return NotFound();
             }
 
-            return new CompanyGetDto()
-            {
-                Id = company.Id,
-                Name = company.Name,
-                PhoneNumber = company.PhoneNumber,
-                Email = company.Email,
-                Password = company.Password,
-                RegistrationDate = company.RegistrationDate,
-                Verified = company.Verified,
-            };
+            var result = _mapper.Map<CompanyDto>(company);
+
+            return Ok(result);
         }
 
         // PUT: api/Companies/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCompany(int id, CompanyDto request)
+        public async Task<IActionResult> PutCompany(int id, CompanyDto updatedCompany)
         {
-            Company? company = await _context.Companies.FirstOrDefaultAsync(comp => comp.Id == id);
+            Company? company = await _context.Companies
+                .Include(c => c.CompanyContactPerson)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             if (company is null)
             {
                 return NotFound();
             }
 
-            company.Name = request.Name;
-            company.PhoneNumber = request.PhoneNumber;
-            company.Email = request.Email;
-            company.Password = request.Password;
-            company.RegistrationDate = request.RegistrationDate;
-            company.Verified = request.Verified;
-
+            _mapper.Map(updatedCompany, company);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // POST: api/Companies
-        [HttpPost]
-        public async Task<ActionResult<Company>> PostCompany(CompanyDto request)
+        // GET api/Companies/5/reviews
+        [HttpGet("{id}/reviews")]
+        public async Task<IActionResult> GetCompanyReviews(int id)
         {
-            if (_context.Companies == null)
-            {
-                return Problem("Entity set 'EventitDbContext.Companies'  is null.");
-            }
+            var company = await _context.Companies
+                .Include(c => c.Events)
+                    .ThenInclude(e => e.EventReviews)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
-            Company company = new Company()
-            {
-                Name = request.Name,
-                PhoneNumber = request.PhoneNumber,
-                Email = request.Email,
-                Password = request.Password,
-                RegistrationDate = request.RegistrationDate,
-                Verified = request.Verified,
-            };
-
-            _context.Companies.Add(company);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetCompany), new { id = company.Id }, company);
-        }
-
-        // DELETE: api/Companies/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCompany(int id)
-        {
-            if (_context.Companies == null)
+            if (company is null)
             {
                 return NotFound();
             }
 
-            var company = await _context.Companies.FindAsync(id);
+            List<EventReviewDto> reviews = new();
 
-            if (company == null)
+            foreach (var e in company.Events)
             {
-                return NotFound();
+                foreach (var review in e.EventReviews)
+                {
+                    reviews.Add(_mapper.Map<EventReviewDto>(review));
+                }
             }
 
-            _context.Companies.Remove(company);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok(reviews);
         }
     }
 }

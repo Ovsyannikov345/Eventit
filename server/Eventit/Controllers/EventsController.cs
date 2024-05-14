@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Eventit.Data;
 using Eventit.Models;
+using AutoMapper;
+using Server.DataTranferObjects;
 
 namespace Eventit.Controllers
 {
@@ -11,107 +13,113 @@ namespace Eventit.Controllers
     {
         private readonly EventitDbContext _context;
 
-        public EventsController(EventitDbContext context)
+        private readonly IMapper _mapper;
+
+        public EventsController(EventitDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Events
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Event>>> GetEvents()
-        {
-          if (_context.Events == null)
-          {
-              return NotFound();
-          }
-            return await _context.Events.ToListAsync();
-        }
-
-        // GET: api/Events/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Event>> GetEvent(int id)
-        {
-          if (_context.Events == null)
-          {
-              return NotFound();
-          }
-            var @event = await _context.Events.FindAsync(id);
-
-            if (@event == null)
-            {
-                return NotFound();
-            }
-
-            return @event;
-        }
-
-        // PUT: api/Events/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEvent(int id, Event @event)
-        {
-            if (id != @event.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(@event).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EventExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Events
-        [HttpPost]
-        public async Task<ActionResult<Event>> PostEvent(Event @event)
-        {
-          if (_context.Events == null)
-          {
-              return Problem("Entity set 'EventitDbContext.Events'  is null.");
-          }
-            _context.Events.Add(@event);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetEvent", new { id = @event.Id }, @event);
-        }
-
-        // DELETE: api/Events/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvent(int id)
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetEvents()
         {
             if (_context.Events == null)
             {
                 return NotFound();
             }
-            var @event = await _context.Events.FindAsync(id);
+
+            var events = await _context.Events
+                .Include(e => e.Company)
+                .Include(e => e.Place)
+                .ToListAsync();
+
+            var mappedEvents = events.Select(_mapper.Map<EventDto>).ToList();
+
+            return Ok(mappedEvents);
+        }
+
+        // GET: api/Events/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<EventDto>> GetEvent(int id)
+        {
+            if (_context.Events == null)
+            {
+                return NotFound();
+            }
+
+            var @event = await _context.Events
+                .Include(e => e.Company)
+                .Include(e => e.Place)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
             if (@event == null)
             {
                 return NotFound();
             }
 
-            _context.Events.Remove(@event);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return _mapper.Map<EventDto>(@event);
         }
 
-        private bool EventExists(int id)
+        // POST: api/Events
+        [HttpPost]
+        public async Task<IActionResult> PostEvent(EventPostDto eventData)
         {
-            return (_context.Events?.Any(e => e.Id == id)).GetValueOrDefault();
+            if (_context.Events == null)
+            {
+                return Problem("Entity set 'EventitDbContext.Events'  is null.");
+            }
+
+            // TODO get company id from auth.
+            Event @event = _mapper.Map<Event>(eventData);
+
+            _context.Events.Add(@event);
+            await _context.SaveChangesAsync();
+
+            Chat chat = new()
+            {
+                IsPublic = true,
+                EventId = @event.Id,
+            };
+
+            _context.Chats.Add(chat);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        // GET: api/Events/5/chat
+        [HttpGet("{id}/chat")]
+        public async Task<IActionResult> GetEventChat(int id)
+        {
+            if (_context.Chats == null)
+            {
+                return NotFound();
+            }
+
+            Chat? chat = await _context.Chats
+                .Include(c => c.Messages)
+                    .ThenInclude(m => m.User)
+                .Include(c => c.Messages)
+                    .ThenInclude(m => m.Company)
+                .FirstOrDefaultAsync(c => c.EventId == id);
+
+            if (chat == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<ChatDto>(chat));
+        }
+
+        // POST: api/Events/5/join
+        [HttpPost("{id}/join")]
+        public async Task<IActionResult> JoinEvent(int id)
+        {
+            // TODO read id from auth
+            // TODO implement
+            throw new NotImplementedException();
         }
     }
 }

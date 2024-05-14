@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Eventit.Data;
 using Eventit.Models;
+using Server.DataTranferObjects;
+using AutoMapper;
 
 namespace Eventit.Controllers
 {
@@ -11,79 +13,47 @@ namespace Eventit.Controllers
     {
         private readonly EventitDbContext _context;
 
-        public EventReviewsController(EventitDbContext context)
+        private readonly IMapper _mapper;
+
+        public EventReviewsController(EventitDbContext context, IMapper mapper)
         {
             _context = context;
-        }
-
-        // GET: api/EventReviews
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<EventReview>>> GetEventReviews()
-        {
-          if (_context.EventReviews == null)
-          {
-              return NotFound();
-          }
-            return await _context.EventReviews.ToListAsync();
+            _mapper = mapper;
         }
 
         // GET: api/EventReviews/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<EventReview>> GetEventReview(int id)
+        public async Task<IActionResult> GetEventReview(int id)
         {
-          if (_context.EventReviews == null)
-          {
-              return NotFound();
-          }
-            var eventReview = await _context.EventReviews.FindAsync(id);
+            if (_context.EventReviews == null)
+            {
+                return NotFound();
+            }
+
+            var eventReview = await _context.EventReviews.FirstOrDefaultAsync(r => r.Id == id);
 
             if (eventReview == null)
             {
                 return NotFound();
             }
 
-            return eventReview;
-        }
-
-        // PUT: api/EventReviews/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEventReview(int id, EventReview eventReview)
-        {
-            if (id != eventReview.UserId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(eventReview).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EventReviewExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return Ok(_mapper.Map<EventReviewDto>(eventReview));
         }
 
         // POST: api/EventReviews
         [HttpPost]
-        public async Task<ActionResult<EventReview>> PostEventReview(EventReview eventReview)
+        public async Task<ActionResult<EventReview>> PostEventReview(EventReviewPostDto eventReviewData)
         {
-          if (_context.EventReviews == null)
-          {
-              return Problem("Entity set 'EventitDbContext.EventReviews'  is null.");
-          }
+            if (_context.EventReviews == null)
+            {
+                return Problem("Entity set 'EventitDbContext.EventReviews'  is null.");
+            }
+
+            // TODO get userId from auth data.
+            EventReview eventReview = _mapper.Map<EventReview>(eventReviewData);
+
             _context.EventReviews.Add(eventReview);
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -101,26 +71,6 @@ namespace Eventit.Controllers
             }
 
             return CreatedAtAction("GetEventReview", new { id = eventReview.UserId }, eventReview);
-        }
-
-        // DELETE: api/EventReviews/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEventReview(int id)
-        {
-            if (_context.EventReviews == null)
-            {
-                return NotFound();
-            }
-            var eventReview = await _context.EventReviews.FindAsync(id);
-            if (eventReview == null)
-            {
-                return NotFound();
-            }
-
-            _context.EventReviews.Remove(eventReview);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
         private bool EventReviewExists(int id)

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Eventit.Data;
 using Eventit.Models;
 using Eventit.DataTranferObjects;
+using AutoMapper;
 
 namespace Eventit.Controllers
 {
@@ -12,65 +13,38 @@ namespace Eventit.Controllers
     {
         private readonly EventitDbContext _context;
 
-        public UsersController(EventitDbContext context)
+        private readonly IMapper _mapper;
+
+        public UsersController(EventitDbContext context, IMapper mapper)
         {
             _context = context;
-        }
-
-        // GET: api/Users
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserGetDto>>> GetUsers()
-        {
-            if (_context.Users == null)
-            {
-                return NotFound();
-            }
-
-            return await _context.Users.Select(user => new UserGetDto()
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Patronymic = user.Patronymic,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                DateOfBirth = user.DateOfBirth,
-                RegistrationDate = user.RegistrationDate,
-            }).ToListAsync();
+            _mapper = mapper;
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserGetDto>> GetUser(int id)
+        public async Task<IActionResult> GetUser(int id)
         {
             if (_context.Users == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.Users.FindAsync(id);
+            User? user = await _context.Users
+                .Include(u => u.Events)
+                .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            return new UserGetDto()
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Patronymic = user.Patronymic,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                DateOfBirth = user.DateOfBirth,
-                RegistrationDate = user.RegistrationDate,
-            };
+            return Ok(_mapper.Map<UserDto>(user));
         }
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, UserPutDto request)
+        public async Task<IActionResult> PutUser(int id, UserPutDto updatedUser)
         {
             User? user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
 
@@ -79,64 +53,8 @@ namespace Eventit.Controllers
                 return BadRequest();
             }
 
-            user.FirstName = request.FirstName;
-            user.LastName = request.LastName;
-            user.Patronymic = request.Patronymic;
-            user.Email = request.Email;
-            user.PhoneNumber = request.PhoneNumber;
-            user.Password = request.Password;
-            user.DateOfBirth = request.DateOfBirth;
-            user.RegistrationDate = request.RegistrationDate;
+            _mapper.Map(updatedUser, user);
 
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        // POST: api/Users
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(UserPostDto userDto)
-        {
-            if (_context.Users == null)
-            {
-                return Problem("Entity set 'EventitDbContext.Users'  is null.");
-            }
-
-            User user = new User()
-            {
-                FirstName = userDto.FirstName,
-                LastName = userDto.LastName,
-                Patronymic = userDto.Patronymic,
-                Email = userDto.Email,
-                PhoneNumber = userDto.PhoneNumber,
-                Password = userDto.Password,
-                DateOfBirth = userDto.DateOfBirth,
-                RegistrationDate = userDto.RegistrationDate,
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetUser), new User(), user);
-        }
-
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            if (_context.Users == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
             return NoContent();

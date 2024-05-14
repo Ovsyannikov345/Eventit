@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Eventit.Data;
 using Eventit.Models;
+using AutoMapper;
+using Server.DataTranferObjects;
 
 namespace Eventit.Controllers
 {
@@ -11,107 +13,30 @@ namespace Eventit.Controllers
     {
         private readonly EventitDbContext _context;
 
-        public MessagesController(EventitDbContext context)
+        private readonly IMapper _mapper;
+
+        public MessagesController(EventitDbContext context, IMapper mapper)
         {
             _context = context;
-        }
-
-        // GET: api/Messages
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Message>>> GetMessages()
-        {
-          if (_context.Messages == null)
-          {
-              return NotFound();
-          }
-            return await _context.Messages.ToListAsync();
-        }
-
-        // GET: api/Messages/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Message>> GetMessage(int id)
-        {
-          if (_context.Messages == null)
-          {
-              return NotFound();
-          }
-            var message = await _context.Messages.FindAsync(id);
-
-            if (message == null)
-            {
-                return NotFound();
-            }
-
-            return message;
-        }
-
-        // PUT: api/Messages/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMessage(int id, Message message)
-        {
-            if (id != message.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(message).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MessageExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            _mapper = mapper;
         }
 
         // POST: api/Messages
         [HttpPost]
-        public async Task<ActionResult<Message>> PostMessage(Message message)
-        {
-          if (_context.Messages == null)
-          {
-              return Problem("Entity set 'EventitDbContext.Messages'  is null.");
-          }
-            _context.Messages.Add(message);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetMessage", new { id = message.Id }, message);
-        }
-
-        // DELETE: api/Messages/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMessage(int id)
+        public async Task<IActionResult> PostMessage(MessagePostDto messageData)
         {
             if (_context.Messages == null)
             {
-                return NotFound();
-            }
-            var message = await _context.Messages.FindAsync(id);
-            if (message == null)
-            {
-                return NotFound();
+                return Problem("Entity set 'EventitDbContext.Messages'  is null.");
             }
 
-            _context.Messages.Remove(message);
+            // TODO get id`s from auth.
+            Message message = _mapper.Map<Message>(messageData);
+
+            _context.Messages.Add(message);
             await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
-
-        private bool MessageExists(int id)
-        {
-            return (_context.Messages?.Any(e => e.Id == id)).GetValueOrDefault();
+            return Ok();
         }
     }
 }
