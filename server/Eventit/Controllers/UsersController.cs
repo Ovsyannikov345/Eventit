@@ -22,6 +22,14 @@ namespace Eventit.Controllers
             _mapper = mapper;
         }
 
+        // POST api/Users/create
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateUser()
+        {
+            // TODO implement.
+            throw new NotImplementedException();
+        }
+
         // GET: api/Users/profile
         [HttpGet("profile")]
         public async Task<ActionResult<UserDto>> GetCompanyProfile()
