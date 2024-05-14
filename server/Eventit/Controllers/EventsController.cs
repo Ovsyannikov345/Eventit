@@ -71,8 +71,21 @@ namespace Eventit.Controllers
                 return Problem("Entity set 'EventitDbContext.Events'  is null.");
             }
 
-            // TODO get company id from auth.
+            string? tokenCompanyId = HttpContext.User.FindFirst("CompanyId")?.Value;
+
+            if (tokenCompanyId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!int.TryParse(tokenCompanyId, out int companyId))
+            {
+                return BadRequest();
+            }
+
             Event @event = _mapper.Map<Event>(eventData);
+
+            @event.CompanyId = companyId;
 
             _context.Events.Add(@event);
             await _context.SaveChangesAsync();
@@ -110,16 +123,81 @@ namespace Eventit.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<ChatDto>(chat));
+            var result = _mapper.Map<ChatDto>(chat);
+
+            string? tokenCompanyId = HttpContext.User.FindFirst("CompanyId")?.Value;
+
+            if (tokenCompanyId != null && int.TryParse(tokenCompanyId, out _))
+            {
+                return Ok(result);
+            }
+
+            string? tokenUserId = HttpContext.User.FindFirst("UserId")?.Value;
+
+            if (tokenUserId == null || !int.TryParse(tokenUserId, out int userId))
+            {
+                return Unauthorized();
+            }
+
+            User? user = await _context.Users
+                .Include(u => u.Events)
+                    .ThenInclude(e => e.Chat)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            if (!user.Events.Any(e => e.Chat?.Id == chat.Id))
+            {
+                return Forbid();
+            }
+
+            return Ok(result);
         }
 
         // POST: api/Events/5/join
         [HttpPost("{id}/join")]
         public async Task<IActionResult> JoinEvent(int id)
         {
-            // TODO read id from auth
-            // TODO implement
-            throw new NotImplementedException();
+            string? tokenUserId = HttpContext.User.FindFirst("UserId")?.Value;
+
+            if (tokenUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!int.TryParse(tokenUserId, out int userId))
+            {
+                return BadRequest();
+            }
+
+            Event? @event = await _context.Events
+                .Include(e => e.Users)
+                .SingleOrDefaultAsync(e => e.Id == id);
+
+            if (@event == null)
+            {
+                return NotFound();
+            }
+
+            if (@event.Users.Any(u => u.Id == userId))
+            {
+                return BadRequest("Already joined");
+            }
+
+            User? user = await _context.Users.SingleOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            @event.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

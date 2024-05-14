@@ -4,6 +4,7 @@ using Eventit.Data;
 using Eventit.DataTranferObjects;
 using Eventit.Models;
 using AutoMapper;
+using Server.DataTranferObjects;
 
 namespace Eventit.Controllers
 {
@@ -49,7 +50,28 @@ namespace Eventit.Controllers
                 return Problem("Entity set 'EventitDbContext.SupportRequests'  is null.");
             }
 
+            string? tokenCompanyId = HttpContext.User.FindFirst("CompanyId")?.Value;
+
+            string? tokenUserId = HttpContext.User.FindFirst("UserId")?.Value;
+
+            if (tokenCompanyId == null && tokenUserId == null)
+            {
+                return Unauthorized();
+            }
+
             SupportRequest supportRequest = _mapper.Map<SupportRequest>(supportRequestData);
+
+            if (!int.TryParse(tokenCompanyId, out int companyId))
+            {
+                if (!int.TryParse(tokenUserId, out int userId))
+                {
+                    return BadRequest();
+                }
+
+                supportRequest.UserId = userId;
+            }
+
+            supportRequest.CompanyId = companyId;
 
             _context.SupportRequests.Add(supportRequest);
             await _context.SaveChangesAsync();

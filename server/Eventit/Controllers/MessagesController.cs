@@ -30,8 +30,28 @@ namespace Eventit.Controllers
                 return Problem("Entity set 'EventitDbContext.Messages'  is null.");
             }
 
-            // TODO get id`s from auth.
+            string? tokenCompanyId = HttpContext.User.FindFirst("CompanyId")?.Value;
+
+            string? tokenUserId = HttpContext.User.FindFirst("UserId")?.Value;
+
+            if (tokenCompanyId == null && tokenUserId == null)
+            {
+                return Unauthorized();
+            }
+
             Message message = _mapper.Map<Message>(messageData);
+
+            if (!int.TryParse(tokenCompanyId, out int companyId))
+            {
+                if (!int.TryParse(tokenUserId, out int userId))
+                {
+                    return BadRequest();
+                }
+
+                message.UserId = userId;
+            }
+
+            message.CompanyId = companyId;
 
             _context.Messages.Add(message);
             await _context.SaveChangesAsync();

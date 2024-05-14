@@ -7,9 +7,5 @@ namespace Eventit.DataTranferObjects
         public string Title { get; set; } = null!;
 
         public string Description { get; set; } = null!;
-
-        public int? UserId { get; set; }
-
-        public int? CompanyId { get; set; }
     }
 }

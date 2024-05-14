@@ -5,6 +5,7 @@ using Eventit.DataTranferObjects;
 using Eventit.Models;
 using AutoMapper;
 using Server.DataTranferObjects;
+using System.Security.Claims;
 
 namespace Eventit.Controllers
 {
@@ -20,6 +21,41 @@ namespace Eventit.Controllers
         {
             _context = context;
             _mapper = mapper;
+        }
+
+        // GET: api/Companies/profile
+        [HttpGet("profile")]
+        public async Task<ActionResult<CompanyDto>> GetCompanyProfile()
+        {
+            if (_context.Companies == null)
+            {
+                return NotFound();
+            }
+
+            string? tokenCompanyId = HttpContext.User.FindFirst("CompanyId")?.Value;
+
+            if (tokenCompanyId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!int.TryParse(tokenCompanyId, out int companyId))
+            {
+                return BadRequest();
+            }
+
+            var company = await _context.Companies
+                .Include(c => c.CompanyContactPerson)
+                .FirstOrDefaultAsync(c => c.Id == companyId);
+
+            if (company == null)
+            {
+                return NotFound();
+            }
+
+            var result = _mapper.Map<CompanyDto>(company);
+
+            return Ok(result);
         }
 
         // GET: api/Companies/5
@@ -56,6 +92,23 @@ namespace Eventit.Controllers
             if (company is null)
             {
                 return NotFound();
+            }
+
+            string? tokenCompanyId = HttpContext.User.FindFirst("CompanyId")?.Value;
+
+            if (tokenCompanyId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!int.TryParse(tokenCompanyId, out int companyId) || companyId != updatedCompany.Id)
+            {
+                return BadRequest();
+            }
+
+            if (companyId != company.Id)
+            {
+                return Forbid();
             }
 
             _mapper.Map(updatedCompany, company);

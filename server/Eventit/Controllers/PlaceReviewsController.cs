@@ -46,11 +46,24 @@ namespace Eventit.Controllers
         {
             if (_context.PlaceReviews == null)
             {
-                return Problem("Entity set 'EventitDbContext.PlaceReviews'  is null.");
+                return Problem("Entity set 'EventitDbContext.PlaceReviews' is null.");
             }
 
-            // TODO get id from auth.
+            string? tokenCompanyId = HttpContext.User.FindFirst("CompanyId")?.Value;
+
+            if (tokenCompanyId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!int.TryParse(tokenCompanyId, out int companyId))
+            {
+                return BadRequest();
+            }
+
             PlaceReview placeReview = _mapper.Map<PlaceReview>(placeReviewData);
+
+            placeReview.CompanyId = companyId;
 
             _context.PlaceReviews.Add(placeReview);
             await _context.SaveChangesAsync();

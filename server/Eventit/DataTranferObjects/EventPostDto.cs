@@ -22,8 +22,6 @@ namespace Server.DataTranferObjects
 
         public bool IsFinished { get; set; }
 
-        public int CompanyId { get; set; }
-
         public int? PlaceId { get; set; }
     }
 }

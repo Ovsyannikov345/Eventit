@@ -9,7 +9,5 @@ namespace Server.DataTranferObjects
         public int Grade { get; set; }
 
         public int EventId { get; set; }
-
-        public int UserId { get; set; }
     }
 }

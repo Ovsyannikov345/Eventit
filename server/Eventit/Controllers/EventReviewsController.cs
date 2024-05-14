@@ -46,11 +46,30 @@ namespace Eventit.Controllers
         {
             if (_context.EventReviews == null)
             {
-                return Problem("Entity set 'EventitDbContext.EventReviews'  is null.");
+                return Problem("Entity set 'EventitDbContext.EventReviews' is null.");
             }
 
-            // TODO get userId from auth data.
+            string? tokenUserId = HttpContext.User.FindFirst("UserId")?.Value;
+
+            if (tokenUserId == null)
+            {
+                return Unauthorized();
+            }
+
+
+            if (!int.TryParse(tokenUserId, out int userId))
+            {
+                return BadRequest();
+            }
+
             EventReview eventReview = _mapper.Map<EventReview>(eventReviewData);
+
+            if (_context.EventReviews.Any(r => r.EventId == eventReview.EventId && r.UserId == userId))
+            { 
+                return BadRequest("Review already exists");
+            }
+
+            eventReview.UserId = userId;
 
             _context.EventReviews.Add(eventReview);
 

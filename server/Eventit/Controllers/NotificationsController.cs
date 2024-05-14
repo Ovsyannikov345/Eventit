@@ -28,17 +28,38 @@ namespace Eventit.Controllers
         {
             if (_context.Notifications == null)
             {
-                return NotFound();
+                return Ok(new List<NotificationDto>());
             }
 
-            // TODO get id`s from auth.
+            string? tokenCompanyId = HttpContext.User.FindFirst("CompanyId")?.Value;
 
-            // TODO implement.
-            throw new NotImplementedException();
+            string? tokenUserId = HttpContext.User.FindFirst("UserId")?.Value;
+
+            if (tokenCompanyId == null && tokenUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (int.TryParse(tokenCompanyId, out int companyId))
+            {
+                var notifications = await _context.Notifications.Where(n => n.CompanyId == companyId).ToListAsync();
+
+                return Ok(_mapper.Map<IEnumerable<NotificationDto>>(notifications));
+            }
+
+            if (int.TryParse(tokenUserId, out int userId))
+            {
+                var notifications = await _context.Notifications.Where(n => n.UserId == userId).ToListAsync();
+
+                return Ok(_mapper.Map<IEnumerable<NotificationDto>>(notifications));
+            }
+
+            return BadRequest();
         }
 
+        // TODO remove.
         // GET: api/Notifications/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<NotificationDto>> GetNotification(int id)
         {
             if (_context.Notifications == null)
@@ -56,6 +77,7 @@ namespace Eventit.Controllers
             return Ok(_mapper.Map<NotificationDto>(notification));
         }
 
+        // TODO remove.
         // POST: api/Notifications
         [HttpPost]
         public async Task<IActionResult> PostNotification(NotificationPostDto notificationData)
@@ -78,17 +100,59 @@ namespace Eventit.Controllers
         [HttpPost("read")]
         public async Task<IActionResult> ReadAll()
         {
-            // TODO get id`s from auth.
-            // TODO implement.
-            throw new NotImplementedException();
+            string? tokenCompanyId = HttpContext.User.FindFirst("CompanyId")?.Value;
+
+            string? tokenUserId = HttpContext.User.FindFirst("UserId")?.Value;
+
+            if (tokenCompanyId == null && tokenUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (int.TryParse(tokenCompanyId, out int companyId))
+            {
+                var notifications = await _context.Notifications.Where(n => n.CompanyId == companyId && !n.IsRead).ToListAsync();
+
+                foreach (var notification in notifications)
+                {
+                    notification.IsRead = true;
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+
+            if (int.TryParse(tokenUserId, out int userId))
+            {
+                var notifications = await _context.Notifications.Where(n => n.UserId == userId && !n.IsRead).ToListAsync();
+
+                foreach (var notification in notifications)
+                {
+                    notification.IsRead = true;
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+
+            return BadRequest();
         }
 
         // POST: api/Notifications/5/read
         [HttpPost("{id}/read")]
-        public async Task<IActionResult> ReadAll(int id)
+        public async Task<IActionResult> ReadOne(int id)
         {
-            // TODO get id`s from auth and check privillege.
-            
+            string? tokenCompanyId = HttpContext.User.FindFirst("CompanyId")?.Value;
+
+            string? tokenUserId = HttpContext.User.FindFirst("UserId")?.Value;
+
+            if (tokenCompanyId == null && tokenUserId == null)
+            {
+                return Unauthorized();
+            }
+
             Notification? notification = await _context.Notifications.FirstOrDefaultAsync(n => n.Id == id);
 
             if (notification is null)
@@ -96,10 +160,33 @@ namespace Eventit.Controllers
                 return NotFound();
             }
 
-            notification.IsRead = true;
-            await _context.SaveChangesAsync();
+            if (int.TryParse(tokenCompanyId, out int companyId))
+            {
+                if (notification.CompanyId != companyId)
+                {
+                    return Forbid();
+                }
 
-            return Ok();
+                notification.IsRead = true;
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+
+            if (int.TryParse(tokenUserId, out int userId))
+            {
+                if (notification.UserId != userId)
+                {
+                    return Forbid();
+                }
+
+                notification.IsRead = true;
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+
+            return BadRequest();
         }
     }
 }
