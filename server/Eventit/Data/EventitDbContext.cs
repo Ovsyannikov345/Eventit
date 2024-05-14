@@ -1,5 +1,6 @@
 ﻿using Eventit.Models;
 using Microsoft.EntityFrameworkCore;
+using Server.Models;
 
 namespace Eventit.Data;
 
@@ -37,6 +38,8 @@ public partial class EventitDbContext : DbContext
 
     public virtual DbSet<SupportRequest> SupportRequests { get; set; }
 
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Chat>(entity =>
@@ -51,7 +54,7 @@ public partial class EventitDbContext : DbContext
                   .HasMaxLength(100)
                   .IsUnicode(false);
             entity.Property(e => e.Password)
-                  .HasMaxLength(50)
+                  .HasMaxLength(255)
                   .IsUnicode(false);
             entity.Property(e => e.Name)
                   .HasMaxLength(255)
@@ -174,7 +177,7 @@ public partial class EventitDbContext : DbContext
                   .HasMaxLength(100)
                   .IsUnicode(false);
             entity.Property(e => e.Password)
-                  .HasMaxLength(50)
+                  .HasMaxLength(255)
                   .IsUnicode(false);
             entity.Property(e => e.FirstName)
                   .HasMaxLength(50)
@@ -196,6 +199,13 @@ public partial class EventitDbContext : DbContext
             entity.Property(e => e.RegistrationDate)
                   .HasDefaultValueSql("(getdate())")
                   .HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.Property(e => e.Token)
+                  .HasMaxLength(500)
+                  .IsUnicode(false);
         });
     }
 }
