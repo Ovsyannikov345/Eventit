@@ -57,45 +57,6 @@ namespace Eventit.Controllers
             return BadRequest();
         }
 
-        // TODO remove.
-        // GET: api/Notifications/5
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<NotificationDto>> GetNotification(int id)
-        {
-            if (_context.Notifications == null)
-            {
-                return NotFound();
-            }
-
-            var notification = await _context.Notifications.FirstOrDefaultAsync(n => n.Id == id);
-
-            if (notification == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(_mapper.Map<NotificationDto>(notification));
-        }
-
-        // TODO remove.
-        // POST: api/Notifications
-        [HttpPost]
-        public async Task<IActionResult> PostNotification(NotificationPostDto notificationData)
-        {
-            if (_context.Notifications == null)
-            {
-                return Problem("Entity set 'EventitDbContext.Notifications'  is null.");
-            }
-
-            // TODO get id`s from auth.
-            Notification notification = _mapper.Map<Notification>(notificationData);
-
-            _context.Notifications.Add(notification);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetNotification), new { id = notification.Id }, notification);
-        }
-
         // POST: api/Notifications/read
         [HttpPost("read")]
         public async Task<IActionResult> ReadAll()
