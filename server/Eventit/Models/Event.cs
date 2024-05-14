@@ -23,6 +23,8 @@ public partial class Event
 
     public bool Free { get; set; }
 
+    public bool IsFinished { get; set; }
+
     public int CompanyId { get; set; }
 
     public virtual Company Company { get; set; } = null!;

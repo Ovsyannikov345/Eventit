@@ -42,7 +42,7 @@ public partial class EventitDbContext : DbContext
         modelBuilder.Entity<Chat>(entity =>
         {
             entity.Property(e => e.IsPublic)
-                  .HasDefaultValue(false);
+                  .HasDefaultValue(true);
         });
 
         modelBuilder.Entity<Company>(entity =>
