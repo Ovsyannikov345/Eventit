@@ -4,7 +4,8 @@ using Eventit.Data;
 using Eventit.Models;
 using Eventit.DataTranferObjects;
 using AutoMapper;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using Server.DataTranferObjects;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Eventit.Controllers
 {
@@ -24,15 +25,29 @@ namespace Eventit.Controllers
 
         // POST api/Users/create
         [HttpPost("create")]
-        public async Task<IActionResult> CreateUser()
+        [AllowAnonymous]
+        public async Task<IActionResult> CreateUser(UserRegistrationDto userData)
         {
-            // TODO implement.
-            throw new NotImplementedException();
+            bool isEmailFree = await IsEmailFree(userData.Email);
+
+            if (!isEmailFree)
+            {
+                return BadRequest("Email is taken");
+            }
+
+            User user = _mapper.Map<User>(userData);
+
+            user.Password = BCrypt.Net.BCrypt.HashPassword(userData.Password);
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, _mapper.Map<UserDto>(user));
         }
 
         // GET: api/Users/profile
         [HttpGet("profile")]
-        public async Task<ActionResult<UserDto>> GetCompanyProfile()
+        public async Task<ActionResult<UserDto>> GetUserProfile()
         {
             if (_context.Users == null)
             {
@@ -119,6 +134,35 @@ namespace Eventit.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // POST api/Users/check-email
+        [HttpPost("check-email")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CheckEmailAvailability(string email)
+        {
+            bool isAvailable = await IsEmailFree(email);
+
+            return isAvailable ? Ok() : BadRequest();
+        }
+
+        private async Task<bool> IsEmailFree(string email)
+        {
+            bool userEmailExists = await _context.Users.AnyAsync(u => u.Email == email);
+
+            if (userEmailExists)
+            {
+                return false;
+            }
+
+            bool companyEmailExists = await _context.Companies.AnyAsync(c => c.Email == email);
+
+            if (companyEmailExists)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
