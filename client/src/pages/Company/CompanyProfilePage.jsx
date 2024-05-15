@@ -1,17 +1,17 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Avatar, Grid, IconButton, TextField, Typography, Alert, Snackbar, Button } from "@mui/material";
-import CompanyHeader from "../../headers/СompanyHeader"
-import NavigateBack from "../../NavigateBack";
+import CompanyHeader from "../../components/headers/СompanyHeader";
+import UserHeader from "../../components/headers/UserHeader";
+import NavigateBack from "../../components/NavigateBack";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import { styled } from "@mui/material/styles";
 import moment from "moment";
 //import ProfileCards from "../../components/ProfileCards";
 import { useTheme } from "@emotion/react";
-//import { getCompany, getProfile, updateAvatar } from "../../api/companyApi";
-//import { updateCompany } from "../../api/companyApi";
-import CompanyReview from "../../../components/CompanyReview";
-import CompanyEditForm from "../../../components/forms/CompanyEditForm";
-import UserHeader from "../../headers/UserHeader";
+//import { getCompany, getProfile, updateAvatar } from "../api/companyApi";
+//import { updateCompany } from "../api/companyApi";
+import CompanyReview from "../../components/CompanyReview";
+//import CompanyEditForm from "../../components/forms/CompanyEditForm";
 import { useParams } from "react-router-dom";
 
 const VisuallyHiddenInput = styled("input")({
@@ -216,12 +216,7 @@ const CompanyProfilePage = () => {
                         marginTop: { xs: "0", md: "40px" },
                     }}
                 >
-                    <Grid
-                        container
-                        item
-                        alignItems={"center"}
-                        sx={{ gap: { xs: "5px", md: "50px" } }}
-                    >
+                    <Grid container item alignItems={"center"} sx={{ gap: { xs: "5px", md: "50px" } }}>
                         <Avatar
                             src={
                                 companyData.id !== undefined

@@ -1,6 +1,6 @@
 import React from "react";
 import { Container, Typography, TextField, Checkbox, FormControlLabel, Button, Input  } from "@mui/material";
-import CompanyHeader from "../../headers/СompanyHeader";
+import CompanyHeader from "../../components/headers/СompanyHeader";
 
 const CreateEventPage = () => {
   return (

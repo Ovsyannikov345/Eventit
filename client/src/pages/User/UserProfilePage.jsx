@@ -3,14 +3,14 @@ import { useTheme } from "@emotion/react";
 import { Avatar, Grid, IconButton, TextField, Typography, Alert, Snackbar, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/EditOutlined";
-import UserHeader from "../../headers/UserHeader";
-import CompanyHeader from "../../headers/СompanyHeader";
-import NavigateBack from "../../NavigateBack";
+import UserHeader from "../../components/headers/UserHeader";
+import CompanyHeader from "../../components/headers/СompanyHeader";
+import NavigateBack from "../../components/NavigateBack";
 //import ProfileCards from "../../components/ProfileCards";
 //import UserReview from "../../components/UserReview";
-//import { getProfile, getUser, updateAvatar, updateUser } from "../../api/userApi";
-import UserEditForm from "../../../components/forms/UserEditForm";
-import addNoun from "../../../utils/fieldsParser";
+//import { getProfile, getUser, updateAvatar, updateUser } from "../api/userApi";
+//import UserEditForm from "../../components/forms/UserEditForm";
+import addNoun from "../../utils/fieldsParser";
 import moment from "moment";
 import { useParams } from "react-router-dom";
 
@@ -259,10 +259,7 @@ const UserProfilePage = () => {
                                             ? addNoun(userData.age, ["год", "года", "лет"])
                                             : "")}
                                 </Typography>
-                                <Typography
-                                    variant="h3"
-                                    sx={{ maxWidth: { xs: "253px", md: "641px" } }}
-                                >
+                                <Typography variant="h3" sx={{ maxWidth: { xs: "253px", md: "641px" } }}>
                                     {userData.description}
                                 </Typography>
                             </Grid>
@@ -309,7 +306,7 @@ const UserProfilePage = () => {
                                         value={userData.email ?? ""}
                                         InputProps={{
                                             readOnly: true,
-                                            sx:{fontSize: { xs: "20px", md: "24px" } }
+                                            sx: { fontSize: { xs: "20px", md: "24px" } },
                                         }}
                                         sx={{
                                             "& .MuiInput-underline:before": {
@@ -326,7 +323,7 @@ const UserProfilePage = () => {
                                         value={userData.phone ?? ""}
                                         InputProps={{
                                             readOnly: true,
-                                            sx:{fontSize: { xs: "20px", md: "24px" } }
+                                            sx: { fontSize: { xs: "20px", md: "24px" } },
                                         }}
                                         sx={{
                                             "& .MuiInput-underline:before": {
