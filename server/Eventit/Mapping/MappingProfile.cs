@@ -12,7 +12,12 @@ namespace Server.Mapping
             CreateMap<Company, CompanyDto>()
                 .ForMember(dest => dest.CompanyContactPerson, opt => opt.MapFrom(src => src.CompanyContactPerson))
                 .ReverseMap();
+            CreateMap<Company, CompanyRegistrationDto>()
+                .ForMember(dest => dest.CompanyContactPerson, opt => opt.MapFrom(src => src.CompanyContactPerson))
+                .ReverseMap();
             CreateMap<CompanyContactPerson, CompanyContactPersonDto>()
+                .ReverseMap();
+            CreateMap<CompanyContactPerson, CompanyContactPersonRegistrationDto>()
                 .ReverseMap();
             CreateMap<EventReview, EventReviewDto>()
                 .ReverseMap();
@@ -50,6 +55,8 @@ namespace Server.Mapping
                 .ReverseMap();
             CreateMap<User, UserDto>()
                 .ForMember(dest => dest.Events, opt => opt.MapFrom(src => src.Events))
+                .ReverseMap();
+            CreateMap<User, UserRegistrationDto>()
                 .ReverseMap();
             CreateMap<User, UserPutDto>()
                 .ReverseMap();
