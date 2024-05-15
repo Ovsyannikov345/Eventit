@@ -1,32 +1,40 @@
-import CompanyProfilePage from "../components/pages/Company/CompanyProfilePage";
-import AvailableOrdersPage from "../components/pages/User/AvailableOrdersPage";
-import OrdersInProgressPage from "../components/pages/User/OrdersInProgressPage";
-import UserOrderDetails from "../components/pages/User/UserOrderDetails";
-import UserProfilePage from "../components/pages/User/UserProfilePage";
+import {
+    USER_PROFILE_ROUTE,
+    SPECIFIC_COMPANY_PROFILE_ROUTE,
+    SPECIFIC_USER_PROFILE_ROUTE,
+    EVENTS_ROUTE,
+    USER_EVENT_DETAILS_ROUTE,
+    USER_EVENTS_ROUTE,
+} from "../utils/consts";
+import CompanyProfilePage from "../pages/Company/CompanyProfilePage";
+import UserProfilePage from "../pages/User/UserProfilePage";
 
 export const userRoutes = [
+    // TODO implement.
+    // {
+    //     path: EVENTS_ROUTE,
+    //     Component: AvailableEventsPage,
+    // },
+    // TODO implement.
+    // {
+    //     path: USER_EVENT_DETAILS_ROUTE,
+    //     Component: UserEventDetails,
+    // },
+    // TODO implement.
+    // {
+    //     path: USER_EVENTS_ROUTE,
+    //     Component: UserEventsPage,
+    // },
     {
-        path: "/orders",
-        Component: AvailableOrdersPage,
-    },
-    {
-        path: "/orders/:id",
-        Component: UserOrderDetails,
-    },
-    {
-        path: "/my-orders",
-        Component: OrdersInProgressPage,
-    },
-    {
-        path: "/company/:id",
+        path: SPECIFIC_COMPANY_PROFILE_ROUTE,
         Component: CompanyProfilePage,
     },
     {
-        path: "/user/:id",
+        path: SPECIFIC_USER_PROFILE_ROUTE,
         Component: UserProfilePage,
     },
     {
-        path: "/user",
+        path: USER_PROFILE_ROUTE,
         Component: UserProfilePage,
     },
 ];

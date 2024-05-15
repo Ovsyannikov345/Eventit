@@ -1,32 +1,40 @@
-import CreateOrderPage from "../components/pages/Company/CreateEventPage";
-import CompanyProfilePage from "../components/pages/Company/CompanyProfilePage";
-import MyOrdersPage from "../components/pages/Company/MyOrdersPage";
-import CompanyOrderDetails from "../components/pages/Company/CompanyOrderDetails";
-import UserProfilePage from '../components/pages/User/UserProfilePage';
+import {
+    COMPANY_EVENTS_ROUTE,
+    COMPANY_EVENT_DETAILS_ROUTE,
+    SPECIFIC_COMPANY_PROFILE_ROUTE,
+    SPECIFIC_USER_PROFILE_ROUTE,
+    EVENT_CREATION_ROUTE,
+    COMPANY_PROFILE_ROUTE,
+} from "./../utils/consts";
+import CreateEventPage from "../pages/Company/CreateEventPage";
+import CompanyProfilePage from "../pages/Company/CompanyProfilePage";
+import UserProfilePage from "../pages/User/UserProfilePage";
 
 export const companyRoutes = [
+    // TODO implement.
+    // {
+    //     path: COMPANY_EVENTS_ROUTE,
+    //     Component: MyEventsPage,
+    // },
+    // TODO implement.
+    // {
+    //     path: COMPANY_EVENT_DETAILS_ROUTE,
+    //     Component: CompanyEventDetails,
+    // },
     {
-        path: "/my-orders",
-        Component: MyOrdersPage,
-    },
-    {
-        path: "/my-orders/:id",
-        Component: CompanyOrderDetails,
-    },
-    {
-        path: "/user/:id",
+        path: SPECIFIC_USER_PROFILE_ROUTE,
         Component: UserProfilePage,
     },
     {
-        path: "/orders/create",
-        Component: CreateOrderPage,
+        path: EVENT_CREATION_ROUTE,
+        Component: CreateEventPage,
     },
     {
-        path: "/company/:id",
+        path: SPECIFIC_COMPANY_PROFILE_ROUTE,
         Component: CompanyProfilePage,
     },
     {
-        path: "/company",
+        path: COMPANY_PROFILE_ROUTE,
         Component: CompanyProfilePage,
     },
 ];

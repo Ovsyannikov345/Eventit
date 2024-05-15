@@ -1,13 +1,14 @@
-import LoginPage from "../components/pages/LoginPage";
-import RegistrationPage from "../components/pages/RegistrationPage";
+import LoginPage from "../pages/LoginPage";
+import { LOGIN_ROUTE, REGISTRATION_ROUTE } from "../utils/consts";
 
 export const publicRoutes = [
     {
-        path: "/login",
+        path: LOGIN_ROUTE,
         Component: LoginPage,
     },
-    {
-        path: "/register",
-        Component: RegistrationPage,
-    },
+    // TODO implement.
+    // {
+    //     path: REGISTRATION_ROUTE,
+    //     Component: RegistrationPage,
+    // },
 ];
