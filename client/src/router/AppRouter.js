@@ -3,44 +3,44 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { publicRoutes } from "./publicRoutes";
 import { userRoutes } from "./userRoutes";
 import { companyRoutes } from "./companyRoutes";
-import { COMPANY_PROFILE_ROUTE, LOGIN_ROUTE, USER_PROFILE_ROUTE } from "../utils/consts";
+import { LOGIN_ROUTE, COMPANY_DEFAULT_ROUTE, USER_DEFAULT_ROUTE } from "../utils/consts";
 
 const AppRouter = () => {
-    const [jwt, setJwt] = useState(localStorage.getItem("jwt"));
+    const [token, setToken] = useState(localStorage.getItem("accessToken"));
     const navigate = useNavigate();
 
     useEffect(() => {
         const handleStorageChange = () => {
-            setJwt(localStorage.getItem("jwt"));
+            setToken(localStorage.getItem("accessToken"));
             navigate("/");
         };
 
         window.addEventListener("storage", handleStorageChange);
     }, [navigate]);
 
-    if (jwt && localStorage.getItem("role") === "user") {
+    if (token && localStorage.getItem("role") === "user") {
         return (
             <Routes>
                 {userRoutes.map(({ path, Component }) => (
                     <Route key={path} path={path} element={<Component />} exact />
                 ))}
-                <Route key="*" path="*" element={<Navigate to={USER_PROFILE_ROUTE} />} />
+                <Route key="*" path="*" element={<Navigate to={USER_DEFAULT_ROUTE} />} />
             </Routes>
         );
     }
 
-    if (jwt && localStorage.getItem("role") === "company") {
+    if (token && localStorage.getItem("role") === "company") {
         return (
             <Routes>
                 {companyRoutes.map(({ path, Component }) => (
                     <Route key={path} path={path} element={<Component />} exact />
                 ))}
-                <Route key="*" path="*" element={<Navigate to={COMPANY_PROFILE_ROUTE} />} />
+                <Route key="*" path="*" element={<Navigate to={COMPANY_DEFAULT_ROUTE} />} />
             </Routes>
         );
     }
 
-    if (!jwt) {
+    if (!token) {
         return (
             <Routes>
                 {publicRoutes.map(({ path, Component }) => (
