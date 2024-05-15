@@ -1,14 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Avatar, Grid, IconButton, TextField, Typography, Alert, Snackbar, Button } from "@mui/material";
-import CompanyHeader from "./../../components/headers/CompanyHeader";
+import CompanyHeader from "../../headers/СompanyHeader"
 import NavigateBack from "../../NavigateBack";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import { styled } from "@mui/material/styles";
 import moment from "moment";
-import ProfileCards from "../../components/ProfileCards";
+//import ProfileCards from "../../components/ProfileCards";
 import { useTheme } from "@emotion/react";
-import { getCompany, getProfile, updateAvatar } from "../../api/companyApi";
-import { updateCompany } from "../../api/companyApi";
+//import { getCompany, getProfile, updateAvatar } from "../../api/companyApi";
+//import { updateCompany } from "../../api/companyApi";
 import CompanyReview from "../../../components/CompanyReview";
 import CompanyEditForm from "../../../components/forms/CompanyEditForm";
 import UserHeader from "../../headers/UserHeader";
@@ -41,33 +41,34 @@ const CompanyProfilePage = () => {
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-    useEffect(() => {
-        const loadData = async () => {
-            const response = id !== undefined ? await getCompany(id) : await getProfile();
+    // TODO implement.
+    // useEffect(() => {
+    //     const loadData = async () => {
+    //         const response = id !== undefined ? await getCompany(id) : await getProfile();
 
-            if (!response) {
-                displayError("Сервис временно недоступен");
-                return;
-            }
+    //         if (!response) {
+    //             displayError("Сервис временно недоступен");
+    //             return;
+    //         }
 
-            if (response.status === 401) {
-                localStorage.removeItem("jwt");
-                localStorage.removeItem("role");
-                window.location.reload();
-            }
+    //         if (response.status === 401) {
+    //             localStorage.removeItem("jwt");
+    //             localStorage.removeItem("role");
+    //             window.location.reload();
+    //         }
 
-            if (response.status >= 300) {
-                displayError("Ошибка при загрузке профиля. Код: " + response.status);
-                console.log(response);
-                return;
-            }
+    //         if (response.status >= 300) {
+    //             displayError("Ошибка при загрузке профиля. Код: " + response.status);
+    //             console.log(response);
+    //             return;
+    //         }
 
-            setCompanyData(response.data);
-            setReadonly(id !== undefined);
-        };
+    //         setCompanyData(response.data);
+    //         setReadonly(id !== undefined);
+    //     };
 
-        loadData();
-    }, [id]);
+    //     loadData();
+    // }, [id]);
 
     const rating = useMemo(() => {
         try {
@@ -106,62 +107,64 @@ const CompanyProfilePage = () => {
         setError(false);
     };
 
-    const applyChanges = async (updatedCompanyData) => {
-        const response = await updateCompany(companyData.id, updatedCompanyData);
+    // TODO implement.
+    // const applyChanges = async (updatedCompanyData) => {
+    //     const response = await updateCompany(companyData.id, updatedCompanyData);
 
-        if (!response) {
-            displayError("Сервис временно недоступен");
-            return;
-        }
+    //     if (!response) {
+    //         displayError("Сервис временно недоступен");
+    //         return;
+    //     }
 
-        if (response.status === 401) {
-            localStorage.removeItem("jwt");
-            localStorage.removeItem("role");
-            window.location.reload();
-        }
+    //     if (response.status === 401) {
+    //         localStorage.removeItem("jwt");
+    //         localStorage.removeItem("role");
+    //         window.location.reload();
+    //     }
 
-        if (response.status >= 300) {
-            displayError("Ошибка при изменении данных. Код: " + response.status);
-            return;
-        }
+    //     if (response.status >= 300) {
+    //         displayError("Ошибка при изменении данных. Код: " + response.status);
+    //         return;
+    //     }
 
-        const imageSuccess = await sendImage();
+    //     const imageSuccess = await sendImage();
 
-        if (imageSuccess) {
-            setCompanyData(response.data);
-            setEditMode(false);
-            window.location.reload();
-        }
-    };
+    //     if (imageSuccess) {
+    //         setCompanyData(response.data);
+    //         setEditMode(false);
+    //         window.location.reload();
+    //     }
+    // };
 
-    const sendImage = async () => {
-        if (image === undefined) {
-            return true;
-        }
+    // TODO implement.
+    // const sendImage = async () => {
+    //     if (image === undefined) {
+    //         return true;
+    //     }
 
-        const response = await updateAvatar(companyData.id, image);
+    //     const response = await updateAvatar(companyData.id, image);
 
-        if (!response) {
-            displayError("Сервис временно недоступен");
-            return false;
-        }
+    //     if (!response) {
+    //         displayError("Сервис временно недоступен");
+    //         return false;
+    //     }
 
-        if (response.status === 401) {
-            localStorage.removeItem("jwt");
-            localStorage.removeItem("role");
-            window.location.reload();
-        }
+    //     if (response.status === 401) {
+    //         localStorage.removeItem("jwt");
+    //         localStorage.removeItem("role");
+    //         window.location.reload();
+    //     }
 
-        if (response.status >= 300) {
-            displayError("Ошибка при отправке изображения. Код: " + response.status);
-            console.log(response);
-            return false;
-        }
+    //     if (response.status >= 300) {
+    //         displayError("Ошибка при отправке изображения. Код: " + response.status);
+    //         console.log(response);
+    //         return false;
+    //     }
 
-        setImage(undefined);
+    //     setImage(undefined);
 
-        return true;
-    };
+    //     return true;
+    // };
 
     return (
         <Grid
@@ -263,7 +266,8 @@ const CompanyProfilePage = () => {
                     </Grid>
                     {!editMode ? (
                         <>
-                            <ProfileCards
+                            {/* // TODO implement.
+                                <ProfileCards
                                 registrationDate={
                                     companyData.createdAt !== undefined
                                         ? moment.utc(companyData.createdAt).format("DD-MM-YYYY")
@@ -271,7 +275,7 @@ const CompanyProfilePage = () => {
                                 }
                                 ordersCount={companyData.Orders !== undefined ? companyData.Orders.length : "-"}
                                 rating={rating}
-                            />
+                            /> */}
                             {companyData.ContactPerson !== undefined ? (
                                 <Grid
                                     container
@@ -402,11 +406,13 @@ const CompanyProfilePage = () => {
                             )}{" "}
                         </>
                     ) : (
-                        <CompanyEditForm
-                            companyData={companyData}
-                            cancelHandler={() => setEditMode(false)}
-                            applyCallback={applyChanges}
-                        />
+                        <></>
+                        // TODO implement.
+                        // <CompanyEditForm
+                        //     companyData={companyData}
+                        //     cancelHandler={() => setEditMode(false)}
+                        //     applyCallback={applyChanges}
+                        // />
                     )}
                 </Grid>
             </Grid>

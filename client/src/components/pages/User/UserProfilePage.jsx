@@ -3,12 +3,12 @@ import { useTheme } from "@emotion/react";
 import { Avatar, Grid, IconButton, TextField, Typography, Alert, Snackbar, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/EditOutlined";
-import UserHeader from "../../../components/headers/UserHeader";
+import UserHeader from "../../headers/UserHeader";
 import CompanyHeader from "../../headers/СompanyHeader";
 import NavigateBack from "../../NavigateBack";
-import ProfileCards from "../../components/ProfileCards";
-import UserReview from "../../components/UserReview";
-import { getProfile, getUser, updateAvatar, updateUser } from "../../api/userApi";
+//import ProfileCards from "../../components/ProfileCards";
+//import UserReview from "../../components/UserReview";
+//import { getProfile, getUser, updateAvatar, updateUser } from "../../api/userApi";
 import UserEditForm from "../../../components/forms/UserEditForm";
 import addNoun from "../../../utils/fieldsParser";
 import moment from "moment";
@@ -41,33 +41,34 @@ const UserProfilePage = () => {
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-    useEffect(() => {
-        const loadData = async () => {
-            const response = id !== undefined ? await getUser(id) : await getProfile();
+    // TODO implement.
+    // useEffect(() => {
+    //     const loadData = async () => {
+    //         const response = id !== undefined ? await getUser(id) : await getProfile();
 
-            if (!response) {
-                displayError("Сервис временно недоступен");
-                return;
-            }
+    //         if (!response) {
+    //             displayError("Сервис временно недоступен");
+    //             return;
+    //         }
 
-            if (response.status === 401) {
-                localStorage.removeItem("jwt");
-                localStorage.removeItem("role");
-                window.location.reload();
-            }
+    //         if (response.status === 401) {
+    //             localStorage.removeItem("jwt");
+    //             localStorage.removeItem("role");
+    //             window.location.reload();
+    //         }
 
-            if (response.status >= 300) {
-                displayError("Ошибка при загрузке профиля. Код: " + response.status);
-                console.log(response);
-                return;
-            }
+    //         if (response.status >= 300) {
+    //             displayError("Ошибка при загрузке профиля. Код: " + response.status);
+    //             console.log(response);
+    //             return;
+    //         }
 
-            setUserData(response.data);
-            setReadonly(id !== undefined);
-        };
+    //         setUserData(response.data);
+    //         setReadonly(id !== undefined);
+    //     };
 
-        loadData();
-    }, [id]);
+    //     loadData();
+    // }, [id]);
 
     const rating = useMemo(() => {
         try {
@@ -106,62 +107,64 @@ const UserProfilePage = () => {
         setError(false);
     };
 
-    const applyChanges = async (updatedUserData) => {
-        const response = await updateUser(userData.id, updatedUserData);
+    // TODO implement.
+    // const applyChanges = async (updatedUserData) => {
+    //     const response = await updateUser(userData.id, updatedUserData);
 
-        if (!response) {
-            displayError("Сервис временно недоступен");
-            return;
-        }
+    //     if (!response) {
+    //         displayError("Сервис временно недоступен");
+    //         return;
+    //     }
 
-        if (response.status === 401) {
-            localStorage.removeItem("jwt");
-            localStorage.removeItem("role");
-            window.location.reload();
-        }
+    //     if (response.status === 401) {
+    //         localStorage.removeItem("jwt");
+    //         localStorage.removeItem("role");
+    //         window.location.reload();
+    //     }
 
-        if (response.status >= 300) {
-            displayError("Ошибка при изменении данных. Код: " + response.status);
-            return;
-        }
+    //     if (response.status >= 300) {
+    //         displayError("Ошибка при изменении данных. Код: " + response.status);
+    //         return;
+    //     }
 
-        const imageSuccess = await sendImage();
+    //     const imageSuccess = await sendImage();
 
-        if (imageSuccess) {
-            setUserData(response.data);
-            setEditMode(false);
-            window.location.reload();
-        }
-    };
+    //     if (imageSuccess) {
+    //         setUserData(response.data);
+    //         setEditMode(false);
+    //         window.location.reload();
+    //     }
+    // };
 
-    const sendImage = async () => {
-        if (image === undefined) {
-            return true;
-        }
+    // TODO implement.
+    // const sendImage = async () => {
+    //     if (image === undefined) {
+    //         return true;
+    //     }
 
-        const response = await updateAvatar(userData.id, image);
+    //     const response = await updateAvatar(userData.id, image);
 
-        if (!response) {
-            displayError("Сервис временно недоступен");
-            return false;
-        }
+    //     if (!response) {
+    //         displayError("Сервис временно недоступен");
+    //         return false;
+    //     }
 
-        if (response.status === 401) {
-            localStorage.removeItem("jwt");
-            localStorage.removeItem("role");
-            window.location.reload();
-        }
+    //     if (response.status === 401) {
+    //         localStorage.removeItem("jwt");
+    //         localStorage.removeItem("role");
+    //         window.location.reload();
+    //     }
 
-        if (response.status >= 300) {
-            displayError("Ошибка при отправке изображения. Код: " + response.status);
-            console.log(response);
-            return false;
-        }
+    //     if (response.status >= 300) {
+    //         displayError("Ошибка при отправке изображения. Код: " + response.status);
+    //         console.log(response);
+    //         return false;
+    //     }
 
-        setImage(undefined);
+    //     setImage(undefined);
 
-        return true;
-    };
+    //     return true;
+    // };
 
     return (
         <Grid
@@ -277,7 +280,8 @@ const UserProfilePage = () => {
                     </Grid>
                     {!editMode ? (
                         <>
-                            <ProfileCards
+                            {/* // TODO implement.
+                                <ProfileCards
                                 registrationDate={
                                     userData.createdAt !== undefined
                                         ? moment.utc(userData.createdAt).format("DD-MM-YYYY")
@@ -285,7 +289,7 @@ const UserProfilePage = () => {
                                 }
                                 ordersCount={userData.Orders !== undefined ? userData.Orders.length : "-"}
                                 rating={rating}
-                            />
+                            /> */}
                             <Grid
                                 container
                                 item
@@ -335,7 +339,8 @@ const UserProfilePage = () => {
                                     />
                                 </Grid>
                             </Grid>
-                            {userData.Reports !== undefined ? (
+                            {/* // TODO implement.
+                                {userData.Reports !== undefined ? (
                                 <Grid
                                     container
                                     item
@@ -386,14 +391,16 @@ const UserProfilePage = () => {
                                 </Grid>
                             ) : (
                                 <></>
-                            )}{" "}
+                            )}{" "} */}
                         </>
                     ) : (
-                        <UserEditForm
-                            userData={userData}
-                            cancelHandler={() => setEditMode(false)}
-                            applyCallback={applyChanges}
-                        />
+                        <></>
+                        // TODO implement.
+                        // <UserEditForm
+                        //     userData={userData}
+                        //     cancelHandler={() => setEditMode(false)}
+                        //     applyCallback={applyChanges}
+                        // />
                     )}
                 </Grid>
             </Grid>
