@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TextField, Button, Grid, Typography, Snackbar, Alert } from "@mui/material";
 import { useFormik } from "formik";
+import { login } from "../api/authApi";
 
 const LoginPage = () => {
     const [error, setError] = useState(false);
@@ -28,47 +29,35 @@ const LoginPage = () => {
             const errors = {};
 
             if (!email) {
-                errors.email = "Обязательное поле";
-                displayError("Введите эл. почту");
+                errors.email = "Введите эл. почту";
             } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
                 errors.email = "Некорректный адрес";
-                displayError("Некорректный адрес эл. почты");
             }
 
             if (!password) {
-                errors.password = "Обязательное поле";
-                displayError("Введите пароль");
+                errors.password = "Введите пароль";
             }
 
             return errors;
         },
         onSubmit: async ({ email, password }) => {
-            //const response = await login
-            console.log("submit");
-            //await login(email, password);
+            const response = await login(email, password);
+
+            if (response.status === 200) {
+                localStorage.setItem("accessToken", response.data.accessToken);
+                localStorage.setItem("refreshToken", response.data.refreshToken);
+                localStorage.setItem("role", response.data.role);
+                window.location.reload();
+            }
+
+            if (response.status === 401) {
+                displayError("Неверные данные аккаунта");
+                return;
+            }
+
+            displayError(response.data.error);
         },
     });
-
-    // const login = async (email, password) => {
-    //     const response = await log(id);
-
-    //     if (!response.status || response.status >= 300) {
-    //         displayError(response.data.error);
-    //         return;
-    //     }
-
-    //     if (response.status < 400) {
-    //         localStorage.setItem("accessToken", response.data.accessToken);
-    //         localStorage.setItem("refreshToken", response.data.refreshToken);
-    //         localStorage.setItem("role", response.data.role);
-    //         localStorage.setItem("userId", response.data.userId);
-    //         window.location.reload();
-    //     } else {
-    //         displayError(response.data.error);
-    //     }
-
-    //     displayError("Сервис временно недоступен");
-    // };
 
     return (
         <>
@@ -85,7 +74,16 @@ const LoginPage = () => {
                             margin="normal"
                             fullWidth
                             value={formik.values.email}
-                            onChange={formik.handleChange}
+                            onChange={(e) => {
+                                formik.setFieldTouched("email", false);
+                                formik.handleChange(e);
+                            }}
+                            error={formik.touched.email && formik.errors.email !== undefined}
+                            helperText={
+                                formik.touched.email && formik.errors.email !== undefined
+                                    ? formik.errors.email
+                                    : ""
+                            }
                         />
                         <TextField
                             id="password"
@@ -95,7 +93,16 @@ const LoginPage = () => {
                             margin="normal"
                             fullWidth
                             value={formik.values.password}
-                            onChange={formik.handleChange}
+                            onChange={(e) => {
+                                formik.setFieldTouched("password", false);
+                                formik.handleChange(e);
+                            }}
+                            error={formik.touched.password && formik.errors.password !== undefined}
+                            helperText={
+                                formik.touched.password && formik.errors.password !== undefined
+                                    ? formik.errors.password
+                                    : ""
+                            }
                         />
                         <Button
                             type="submit"
