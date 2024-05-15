@@ -62,8 +62,9 @@ namespace Server.Controllers
 
                 return Ok(new LoginResponse()
                 {
-                    Token = token,
+                    AccessToken = token,
                     RefreshToken = refreshToken,
+                    Role = "company",
                 });
             }
 
@@ -96,8 +97,9 @@ namespace Server.Controllers
 
                 return Ok(new LoginResponse()
                 {
-                    Token = token,
+                    AccessToken = token,
                     RefreshToken = refreshToken,
+                    Role = "user",
                 });
             }
 
