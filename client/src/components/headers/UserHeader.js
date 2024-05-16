@@ -7,6 +7,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SupportIcon from '@mui/icons-material/Support';
 import styled from 'styled-components';
 
+// TODO useTheme();
 const theme = createTheme({
   palette: {
     primary: {
