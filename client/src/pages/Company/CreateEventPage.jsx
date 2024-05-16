@@ -1,8 +1,110 @@
-import React from "react";
-import { Container, Typography, TextField, Checkbox, FormControlLabel, Button, Input  } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Container, Typography, TextField, Checkbox, FormControlLabel, Button, Input} from "@mui/material";
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import CompanyHeader from "../../components/headers/СompanyHeader";
+import { getPlaces,postPlace } from "../../api/placesApi";
+import { postEvent } from "../../api/eventsApi";
+import Autocomplete from '@mui/material/Autocomplete';
+import StarIcon from '@mui/icons-material/Star';
+
 
 const CreateEventPage = () => {
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [ageRestriction, setAgeRestriction] = useState(0);
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [entranceFee, setEntranceFee] = useState(0);
+  const [places, setPlaces] = useState([]);
+  const [rating, setRating] = useState(null);
+  const [selectedPlace, setSelectedPlace] = useState(null);
+
+
+  useEffect(() => {
+    const fetchPlaces = async () => {
+      try {
+        const response = await getPlaces();
+        setPlaces(response.data);
+      } catch (error) {
+      }
+    };
+
+    fetchPlaces();
+  }, []);
+
+  const handleTitleChange = (event) => setTitle(event.target.value);
+  const handleDescriptionChange = (event) => setDescription(event.target.value);
+  const handleStartDateChange = (date) => setStartDate(date);
+  const handleEndDateChange = (date) => setEndDate(date);
+  const handleAgeRestrictionChange = (event) => setAgeRestriction(parseInt(event.target.value));
+  const handleAddressChange = (event) => setAddress(event.target.value);
+  const handleEntranceFeeChange = (event) => setEntranceFee(event.target.value);
+
+  const handleNameChange = (event, value) => {
+    setName(value);
+
+    const selectedPlace = places.find(place => place.name === value);
+    setSelectedPlace(selectedPlace);
+
+    if (selectedPlace) {
+      setAddress(selectedPlace.address);
+      console.log("rating");
+      if (selectedPlace.placeReviews && selectedPlace.placeReviews.length > 0) {
+        const averageRating = selectedPlace.placeReviews.reduce((sum, review) => sum + review.grade, 0) / selectedPlace.placeReviews.length;
+        setRating(averageRating.toFixed(1));
+        console.log("rating");
+      } else {
+        setRating(null);
+      }
+    } else {
+      setAddress("");
+      setRating(null);
+    }
+  };
+
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    let placeId = selectedPlace ? selectedPlace.id : null;
+
+    // If the place is new (not selected from the autocomplete list), create it first
+    if (!placeId && name && address) {
+      try {
+        const response = await postPlace({ name, address });
+        placeId = response.data.id;
+      } catch (error) {
+        console.error("Failed to create new place", error);
+        return;
+      }
+    }
+
+    // Prepare event data
+    const eventData = {
+      title,
+      description,
+      startDate,
+      endDate,
+      ageRestriction,
+      entranceFee: entranceFee || null,
+      placeId: placeId || null,
+      onlineEvent: placeId === null ? false : true,
+      free: entranceFee === null ? false : true,
+    };
+    
+
+    try {
+      await postEvent(eventData);
+      // Optionally, redirect or show success message
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to create event", error);
+    }
+  };
+
   return (
     <div>
       <CompanyHeader />
@@ -23,7 +125,13 @@ const CreateEventPage = () => {
           Что ж, начнем....
         </Typography>
         <form>
-          <div
+          <div style={{  marginBottom: "3vh" }}>
+            <Typography variant="body1" sx={{ marginBottom: 0, fontSize: "15px", color: "grey" }}>
+              Название
+            </Typography>
+            <TextField type="text" placeholder="Введите название мероприятия" fullWidth onChange={handleTitleChange} value={title}/>
+          </div>
+          <div 
             style={{
               display: "flex",
               justifyContent: "space-between",
@@ -31,23 +139,17 @@ const CreateEventPage = () => {
               marginBottom: "3vh",
             }}
           >
-            <div style={{ width: "30%" }}>
+            <div style={{ width: "40%" }}>
               <Typography variant="body1" sx={{ marginBottom: 0, fontSize: "15px", color: "grey" }}>
-                Дата проведения
+                Дата проведения и время
               </Typography>
-              <TextField type="date" fullWidth />
+              <DateTimePicker fullWidth onChange={handleStartDateChange} value={startDate}/>
             </div>
             <div style={{ width: "30%" }}>
               <Typography variant="body1" sx={{ marginBottom: 0, fontSize: "15px", color: "grey" }}>
-                Время проведения
+              Дата окончания и время
               </Typography>
-              <TextField type="time" fullWidth />
-            </div>
-            <div style={{ width: "30%" }}>
-              <Typography variant="body1" sx={{ marginBottom: 0, fontSize: "15px", color: "grey" }}>
-                Время окончания
-              </Typography>
-              <TextField type="time" fullWidth />
+              <DateTimePicker fullWidth onChange={handleEndDateChange} value={endDate}/>
             </div>
           </div>
           <div style={{ display: "flex", justifyContent: "center" }}>
@@ -55,8 +157,22 @@ const CreateEventPage = () => {
             <Typography variant="body1" sx={{ marginBottom: 0, fontSize: "15px", color: "grey" }}>
               Место проведения
             </Typography>
-            <TextField placeholder="Название" fullWidth />
-            <TextField placeholder="Адрес" fullWidth sx={{ marginTop: "2vh"}} />
+            <Autocomplete
+              freeSolo
+              options={places}
+              getOptionLabel={(option) => option.name}
+              onInputChange={handleNameChange}
+              renderInput={(params) => <TextField {...params} placeholder="Название" fullWidth />}
+            />
+            {rating !== null && (
+              <div style={{ marginLeft: "1vw", marginTop: "0.5vh", display: "flex", alignItems: "center" }}>
+                <Typography variant="body1" sx={{ fontSize: "15px", color: "grey", display: "flex", alignItems: "center" }}>
+                    Рейтинг: {rating} <StarIcon sx={{ fontSize:"18px", color: "gold", marginBottom:"0.4vh" }} />
+                  </Typography>
+              </div>
+            )}
+            <TextField placeholder="Адрес" fullWidth sx={{ marginTop: "2vh"}} onChange={handleAddressChange} 
+            value={address}/>
           </div>
           <Container
               sx={{
@@ -65,7 +181,8 @@ const CreateEventPage = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent:"flex-end"
+                justifyContent:"flex-end",
+                marginRight:0
               }}
             >
               <Typography variant="body1" sx={{ marginBottom: 0, fontSize: "15px", color: "grey" }}>
@@ -109,14 +226,10 @@ const CreateEventPage = () => {
                 type="number"
                 inputProps={{ min: 0, max: 120 }}
                 sx={{
-                  width: "5vw",
-                  borderTop: "1px solid white",
-                  borderLeft: "1px solid white",
-                  borderBottom: "1px solid black",
-                  borderRight: 0,
-                  borderTopRightRadius: 0,
-                  borderBottomRightRadius: 0,
+                  width: "30%",
                 }}
+                value={ageRestriction}
+                onChange={handleAgeRestrictionChange} 
               />
               <Typography variant="body1" sx={{ marginLeft: "1vw", marginRight: "1vw" }}>
                 лет
@@ -127,13 +240,18 @@ const CreateEventPage = () => {
             <Typography variant="body1" sx={{ marginBottom: 0, fontSize: "15px", color: "grey" }}>
               Плата за вход
             </Typography>
-            <TextField type="text" placeholder="Введите плату за вход" fullWidth />
+            <div style={{ display: "flex", alignItems: "center" }}>
+            <TextField type="number"  sx={{ width:"30%"}} onChange={handleEntranceFeeChange} value={entranceFee} />
+            <Typography variant="body1" sx={{ marginLeft: "1vw", marginRight: "1vw" }}>
+                р.
+              </Typography>
+              </div>
           </div>
           <div style={{ width: "100%", marginBottom: "3vh" }}>
             <Typography variant="body1" sx={{ marginBottom: 0, fontSize: "15px", color: "grey" }}>
               Описание
             </Typography>
-            <TextField type="text" placeholder="Введите описание" fullWidth />
+            <TextField type="text" placeholder="Введите описание" fullWidth onChange={handleDescriptionChange} value={description}/>
           </div>
         </form>
         <div
@@ -146,7 +264,7 @@ const CreateEventPage = () => {
         >
           <Button
             variant="contained"
-
+            onClick={handleSubmit}
             sx={{
               color: "black",
               backgroundColor: "#729CDB",
@@ -158,6 +276,7 @@ const CreateEventPage = () => {
                 backgroundColor: "#204276",
               },
             }}
+            disabled={!title || !description || !startDate || !endDate || !ageRestriction || (name && !address)}
           >
             Создать
           </Button>
