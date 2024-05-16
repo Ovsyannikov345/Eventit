@@ -2,28 +2,19 @@ import { ThemeProvider, createTheme } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import AppRouter from './router/AppRouter';
+import AppRouter from "./router/AppRouter";
 
 const App = () => {
-    // TODO set correct values.
     const theme = createTheme({
         palette: {
             primary: {
                 main: "#729CDB",
             },
+            secondary: {
+                main: "#FFFFFF",
+            },
             text: {
                 main: "#000000",
-            },
-        },
-        typography: {
-            h1: {
-                fontSize: "36px",
-            },
-            h2: {
-                fontSize: "24px",
-            },
-            h3: {
-                fontSize: "16px",
             },
         },
         breakpoints: {
