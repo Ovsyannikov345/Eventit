@@ -8,10 +8,6 @@ const registerCompany = async (companyData) => {
         return response;
     } catch (error) {
         if (error.response) {
-            if (error.response.status === 401) {
-                return await updateToken(registerCompany, companyData);
-            }
-
             return error.response;
         } else if (error.request) {
             return { data: { error: "Сервис временно недоступен" } };
@@ -117,4 +113,4 @@ const checkEmailAvailability = async (email) => {
     }
 };
 
-export { registerCompany, getCompanyProfile, getCompany, getCompanyReviews, checkEmailAvailability };
+export { registerCompany, getCompanyProfile, getCompany, putCompany, getCompanyReviews, checkEmailAvailability };
