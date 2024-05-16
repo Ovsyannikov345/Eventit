@@ -9,7 +9,7 @@ import NavigateBack from "../../components/NavigateBack";
 //import ProfileCards from "../../components/ProfileCards";
 //import UserReview from "../../components/UserReview";
 //import { getProfile, getUser, updateAvatar, updateUser } from "../api/userApi";
-//import UserEditForm from "../../components/forms/UserEditForm";
+import UserEditForm from "../../components/forms/UserEditForm";
 import addNoun from "../../utils/fieldsParser";
 import moment from "moment";
 import { useParams } from "react-router-dom";

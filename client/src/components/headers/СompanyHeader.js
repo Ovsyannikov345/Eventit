@@ -5,6 +5,7 @@ import Logo from '../../img/logo.png';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SupportIcon from '@mui/icons-material/Support';
+import LogoutIcon from '@mui/icons-material/Logout';
 import styled from 'styled-components';
 
 const theme = createTheme({
@@ -42,6 +43,14 @@ const Activity = styled.div`
   align-items: center;
 `;
 
+const handleLogout = () => {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('role');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('token');
+  window.location.reload();
+};
+
 const CompanyHeader = () => {
   return (
     <ThemeProvider theme={theme}>
@@ -63,6 +72,9 @@ const CompanyHeader = () => {
             </IconButton>
             <IconButton color="inherit" title="Техническая поддержка">
               <SupportIcon />
+            </IconButton>
+            <IconButton color="inherit" title="Выход" onClick={handleLogout}>
+              <LogoutIcon />
             </IconButton>
           </Activity>
         </Toolbar>
