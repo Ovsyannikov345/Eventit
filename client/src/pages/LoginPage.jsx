@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextField, Button, Grid, Typography, Snackbar, Alert } from "@mui/material";
+import { TextField, Button, Grid, Typography, Snackbar, Alert, CircularProgress } from "@mui/material";
 import { useFormik } from "formik";
 import { login } from "../api/authApi";
 import Logo from "../img/logo.png";
@@ -21,6 +21,8 @@ const StyledLogo = styled.img`
 `;
 
 const LoginPage = () => {
+    const [loading, setLoading] = useState(false);
+
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -60,6 +62,8 @@ const LoginPage = () => {
             return errors;
         },
         onSubmit: async ({ email, password }) => {
+            setLoading(true);
+
             const response = await login(email, password);
 
             if (response.status === 200) {
@@ -71,10 +75,12 @@ const LoginPage = () => {
 
             if (response.status === 401) {
                 displayError("Неверные данные аккаунта");
+                setLoading(false);
                 return;
             }
 
             displayError(response.data.error);
+            setLoading(false);
         },
     });
 
@@ -143,29 +149,37 @@ const LoginPage = () => {
                                     : ""
                             }
                         />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            style={{ marginTop: "20px", height: "50px", borderRadius: "15px" }}
-                        >
-                            Войти
-                        </Button>
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            color="secondary"
-                            style={{
-                                marginTop: "20px",
-                                height: "50px",
-                                borderRadius: "15px",
-                                border: "1px solid #999999",
-                            }}
-                            onClick={() => navigate("/register")}
-                        >
-                            Регистрация
-                        </Button>
+                        {!loading ? (
+                            <>
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    style={{ marginTop: "20px", height: "50px", borderRadius: "15px" }}
+                                >
+                                    Войти
+                                </Button>
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    color="secondary"
+                                    style={{
+                                        marginTop: "20px",
+                                        height: "50px",
+                                        borderRadius: "15px",
+                                        border: "1px solid #999999",
+                                    }}
+                                    onClick={() => navigate("/register")}
+                                >
+                                    Регистрация
+                                </Button>
+                            </>
+                        ) : (
+                            <Grid container justifyContent={"center"}>
+                                <CircularProgress color="primary" style={{ marginTop: "10px" }} />
+                            </Grid>
+                        )}
                     </form>
                 </Grid>
                 <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
