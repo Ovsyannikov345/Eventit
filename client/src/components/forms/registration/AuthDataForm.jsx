@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { TextField, Button, Grid, Typography, Snackbar, Alert } from "@mui/material";
+import { TextField, Button, Grid, Typography, Snackbar, Alert, CircularProgress } from "@mui/material";
 import { useFormik } from "formik";
 import { checkEmailAvailability } from "../../../api/companiesApi";
 import Logo from "../../../img/logo.png";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
 
 const LogoContainer = styled.div`
     width: 200px;
@@ -20,10 +19,10 @@ const StyledLogo = styled.img`
 `;
 
 const AuthDataForm = ({ setAuthData }) => {
+    const [loading, setLoading] = useState(false);
+
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-
-    const navigate = useNavigate();
 
     const displayError = (message) => {
         setErrorMessage(message);
@@ -51,6 +50,8 @@ const AuthDataForm = ({ setAuthData }) => {
                 errors.email = "Введите эл. почту";
             } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
                 errors.email = "Некорректный адрес";
+            } else if (email.length > 100) {
+                errors.email = "Почта не должна превышать 100 символов";
             }
 
             if (!password) {
@@ -66,14 +67,18 @@ const AuthDataForm = ({ setAuthData }) => {
             return errors;
         },
         onSubmit: async ({ email, password }) => {
+            setLoading(true);
+
             const response = await checkEmailAvailability(email);
 
             if (!response.status || response.status >= 300) {
+                setLoading(false);
                 displayError(response.data.error);
                 return;
             }
 
             if (!response.data.isAvailable) {
+                setLoading(false);
                 displayError("Почта уже используется");
                 return;
             }
@@ -158,15 +163,21 @@ const AuthDataForm = ({ setAuthData }) => {
                                 : ""
                         }
                     />
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        style={{ marginTop: "20px", height: "50px", borderRadius: "15px" }}
-                    >
-                        Далее
-                    </Button>
+                    {!loading ? (
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            style={{ marginTop: "20px", height: "50px", borderRadius: "15px" }}
+                        >
+                            Далее
+                        </Button>
+                    ) : (
+                        <Grid container justifyContent={"center"}>
+                            <CircularProgress color="primary" style={{ marginTop: "10px" }} />
+                        </Grid>
+                    )}
                 </form>
             </Grid>
             <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
