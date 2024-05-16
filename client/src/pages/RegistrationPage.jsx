@@ -6,11 +6,16 @@ import TypeSelectForm from "../components/forms/registration/TypeSelectForm";
 import AuthDataForm from "../components/forms/registration/AuthDataForm";
 import CompanyPersonalDataForm from "../components/forms/registration/CompanyPersonalDataForm";
 import UserPersonalDataForm from "../components/forms/registration/UserPersonalDataForm";
+import LoadingModal from "../components/modals/LoadingModal";
+import { registerUser } from "../api/usersApi";
+import { login } from "../api/authApi";
+import { registerCompany } from "../api/companiesApi";
 
 const RegistrationPage = () => {
+    const [isLoading, setIsLoading] = useState(false);
+
     const [accountType, setAccountType] = useState("");
     const [authData, setAuthData] = useState(null);
-    const [personalData, setPersonalData] = useState(null);
 
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -30,8 +35,67 @@ const RegistrationPage = () => {
         setError(false);
     };
 
+    const register = async (personalData) => {
+        setIsLoading(true);
+
+        console.log({...authData, ...personalData});
+
+        if (accountType === "user") {
+            const response = await registerUser({
+                ...authData,
+                ...personalData,
+            });
+
+            if (!response.status || response.status >= 300) {
+                displayError(response.data.error);
+                setIsLoading(false);
+                return;
+            }
+
+            const loginResponse = await login(authData.email, authData.password);
+
+            if (!loginResponse.status || loginResponse.status >= 300) {
+                navigate("/login");
+                setIsLoading(false);
+                return;
+            }
+
+            localStorage.setItem("accessToken", loginResponse.data.accessToken);
+            localStorage.setItem("refreshToken", loginResponse.data.refreshToken);
+            localStorage.setItem("role", loginResponse.data.role);
+            window.location.reload();
+        }
+
+        if (accountType === "company") {
+            const response = await registerCompany({
+                ...authData,
+                ...personalData,
+            });
+
+            if (!response.status || response.status >= 300) {
+                displayError(response.data.error);
+                setIsLoading(false);
+                return;
+            }
+
+            const loginResponse = await login(authData.email, authData.password);
+
+            if (!loginResponse.status || loginResponse.status >= 300) {
+                navigate("/login");
+                setIsLoading(false);
+                return;
+            }
+
+            localStorage.setItem("accessToken", loginResponse.data.accessToken);
+            localStorage.setItem("refreshToken", loginResponse.data.refreshToken);
+            localStorage.setItem("role", loginResponse.data.role);
+            window.location.reload();
+        }
+    };
+
     return (
         <>
+            <LoadingModal isOpen={isLoading} />
             <Grid
                 container
                 justifyContent="center"
@@ -39,13 +103,13 @@ const RegistrationPage = () => {
                 style={{ height: "100%", backgroundImage: `url(${LoginBackground})`, backgroundSize: "cover" }}
             >
                 {!accountType ? (
-                    <TypeSelectForm setAccountType={setAccountType}/>
+                    <TypeSelectForm setAccountType={setAccountType} />
                 ) : !authData ? (
-                    <AuthDataForm setAuthData={setAuthData}/>
+                    <AuthDataForm setAuthData={setAuthData} />
                 ) : accountType === "user" ? (
-                    <UserPersonalDataForm />
+                    <UserPersonalDataForm finishRegistration={register} />
                 ) : (
-                    <CompanyPersonalDataForm />
+                    <CompanyPersonalDataForm finishRegistration={register}/>
                 )}
                 <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
                     <Alert onClose={closeSnackbar} severity="error" sx={{ width: "100%" }}>
