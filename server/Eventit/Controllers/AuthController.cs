@@ -135,7 +135,10 @@ namespace Server.Controllers
 
                 string newToken = CreateToken(principal.Claims);
 
-                return Ok(newToken);
+                return Ok(new
+                {
+                    accessToken = newToken
+                });
             }
             catch
             {

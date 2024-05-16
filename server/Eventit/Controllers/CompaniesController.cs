@@ -173,11 +173,14 @@ namespace Eventit.Controllers
         // POST api/Companies/check-email
         [HttpPost("check-email")]
         [AllowAnonymous]
-        public async Task<IActionResult> CheckEmailAvailability(string email)
+        public async Task<IActionResult> CheckEmailAvailability(EmailCheckDto emailData)
         {
-            bool isAvailable = await IsEmailFree(email);
+            bool isAvailable = await IsEmailFree(emailData.Email);
 
-            return isAvailable ? Ok() : BadRequest();
+            return Ok(new
+            {
+                IsAvailable = isAvailable,
+            });
         }
 
         private async Task<bool> IsEmailFree(string email)
