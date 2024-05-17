@@ -51,7 +51,9 @@ namespace Eventit.Controllers
 
             var @event = await _context.Events
                 .Include(e => e.Company)
+                    .ThenInclude(c => c.CompanyContactPerson)
                 .Include(e => e.Place)
+                    .ThenInclude(p => p!.PlaceReviews)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if (@event == null)
