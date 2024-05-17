@@ -8,6 +8,7 @@ import {
 } from "../utils/consts";
 import CompanyProfilePage from "../pages/Company/CompanyProfilePage";
 import UserProfilePage from "../pages/User/UserProfilePage";
+import UserEventDetailsPage from "../pages/User/UserEventDetailsPage";
 
 export const userRoutes = [
     // TODO implement.
@@ -15,11 +16,10 @@ export const userRoutes = [
     //     path: EVENTS_ROUTE,
     //     Component: AvailableEventsPage,
     // },
-    // TODO implement.
-    // {
-    //     path: USER_EVENT_DETAILS_ROUTE,
-    //     Component: UserEventDetails,
-    // },
+    {
+        path: USER_EVENT_DETAILS_ROUTE,
+        Component: UserEventDetailsPage,
+    },
     // TODO implement.
     // {
     //     path: USER_EVENTS_ROUTE,
