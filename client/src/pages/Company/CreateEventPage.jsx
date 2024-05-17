@@ -6,6 +6,7 @@ import { getPlaces,postPlace } from "../../api/placesApi";
 import { postEvent } from "../../api/eventsApi";
 import Autocomplete from '@mui/material/Autocomplete';
 import StarIcon from '@mui/icons-material/Star';
+import moment from 'moment';
 
 
 const CreateEventPage = () => {
@@ -21,6 +22,8 @@ const CreateEventPage = () => {
   const [places, setPlaces] = useState([]);
   const [rating, setRating] = useState(null);
   const [selectedPlace, setSelectedPlace] = useState(null);
+
+  console.log("123");
 
 
   useEffect(() => {
@@ -143,13 +146,14 @@ const CreateEventPage = () => {
               <Typography variant="body1" sx={{ marginBottom: 0, fontSize: "15px", color: "grey" }}>
                 Дата проведения и время
               </Typography>
-              <DateTimePicker fullWidth onChange={handleStartDateChange} value={startDate}/>
+              <DateTimePicker fullWidth onChange={handleStartDateChange} value={startDate} disablePast maxDate={moment(endDate)}/>
             </div>
             <div style={{ width: "30%" }}>
               <Typography variant="body1" sx={{ marginBottom: 0, fontSize: "15px", color: "grey" }}>
               Дата окончания и время
               </Typography>
-              <DateTimePicker fullWidth onChange={handleEndDateChange} value={endDate}/>
+              <DateTimePicker fullWidth onChange={handleEndDateChange} value={endDate}
+              minDate={moment(startDate)} disablePast/>
             </div>
           </div>
           <div style={{ display: "flex", justifyContent: "center" }}>
