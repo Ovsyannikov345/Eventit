@@ -71,6 +71,7 @@ const LoginPage = () => {
                 localStorage.setItem("refreshToken", response.data.refreshToken);
                 localStorage.setItem("role", response.data.role);
                 window.location.reload();
+                return;
             }
 
             if (response.status === 401) {
