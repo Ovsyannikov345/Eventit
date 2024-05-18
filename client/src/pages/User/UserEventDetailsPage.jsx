@@ -167,6 +167,7 @@ const UserEventDetailsPage = () => {
             <ParticipantsModal
                 isOpen={isParticipantsModalOpen}
                 onClose={() => setIsParticipantsModalOpen(false)}
+                participants={participants}
             />
             <Grid
                 container

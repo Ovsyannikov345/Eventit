@@ -1,8 +1,8 @@
 import React from "react";
-import { Dialog, Typography, Grid, Button, TextField } from "@mui/material";
+import { Dialog, Typography, Grid } from "@mui/material";
+import ParticipantsList from "./ParticipantsList";
 
-const ParticipantsModal = ({ isOpen, onClose }) => {
-
+const ParticipantsModal = ({ isOpen, onClose, participants }) => {
     return (
         <Dialog
             open={isOpen}
@@ -28,7 +28,7 @@ const ParticipantsModal = ({ isOpen, onClose }) => {
                 <Typography variant="h5" height={"69px"} display={"flex"} alignItems={"center"}>
                     Список участников
                 </Typography>
-                
+                <ParticipantsList participants={participants} />
             </Grid>
         </Dialog>
     );
