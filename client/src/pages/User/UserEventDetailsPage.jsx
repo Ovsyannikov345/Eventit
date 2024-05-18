@@ -15,6 +15,7 @@ import addNoun from "./../../utils/fieldsParser";
 import ShowDetailsButton from "./../../components/buttons/ShowDetailsButton";
 import HideDetailsButton from "./../../components/buttons/HideDetailsButton";
 import ParticipantsModal from "../../components/modals/ParticipantsModal/ParticipantsModal";
+import Chat from "../../components/Chat/Chat";
 
 const UserEventDetailsPage = () => {
     const { id } = useParams();
@@ -459,10 +460,17 @@ const UserEventDetailsPage = () => {
                         </>
                     )}
                     {participants && isParticipant ? (
-                        <>
-                            <h1>This is chat</h1>
-                            {/* TODO implement chat */}
-                        </>
+                        <Grid
+                            container
+                            pt={2}
+                            borderTop={"1px solid #999999"}
+                            borderBottom={"1px solid #999999"}
+                            flexDirection={"column"}
+                            alignItems={"center"}
+                            justifyContent={"space-between"}
+                        >
+                            <Chat eventId={event.id} companyId={event.company.id} />
+                        </Grid>
                     ) : (
                         <Container style={{ display: "flex", justifyContent: "center" }}>
                             {participants && (
