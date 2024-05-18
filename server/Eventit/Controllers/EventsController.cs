@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Eventit.Data;
 using Eventit.Models;
@@ -182,6 +182,11 @@ namespace Eventit.Controllers
             if (@event == null)
             {
                 return NotFound();
+            }
+
+            if (@event.IsFinished)
+            {
+                return BadRequest("Event is finished");
             }
 
             if (@event.Users.Any(u => u.Id == userId))
