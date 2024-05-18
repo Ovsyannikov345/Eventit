@@ -2,8 +2,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Typography, Button, Container, Grid, Snackbar, Alert, Rating, Avatar } from "@mui/material";
 import CalendarIcon from "@mui/icons-material/CalendarMonth";
 import TimeIcon from "@mui/icons-material/AccessTime";
+import PersonIcon from "@mui/icons-material/Person";
+import ExitIcon from "@mui/icons-material/ExitToApp";
 import { useNavigate, useParams } from "react-router-dom";
-import { getEvent } from "../../api/eventsApi";
+import { getEvent, getEventParticipants, joinEvent, leaveEvent } from "../../api/eventsApi";
 import { getCompanyReviews } from "../../api/companiesApi";
 import moment from "moment";
 import UserHeader from "./../../components/headers/UserHeader";
@@ -46,6 +48,7 @@ const UserEventDetailsPage = () => {
 
     const [event, setEvent] = useState(null);
     const [companyReviews, setCompanyReviews] = useState(null);
+    const [participants, setParticipants] = useState(null);
 
     const [showDetails, setShowDetails] = useState(false);
 
@@ -61,7 +64,7 @@ const UserEventDetailsPage = () => {
             }
 
             // TODO remove.
-            console.log(response.data);
+            //console.log(response.data);
 
             companyId = response.data.company.id;
             setEvent(response.data);
@@ -78,9 +81,24 @@ const UserEventDetailsPage = () => {
             setCompanyReviews(response.data);
         };
 
+        const loadParticipants = async () => {
+            const response = await getEventParticipants(id);
+
+            if (!response.status || response.status >= 300) {
+                displayError(response.data.error);
+                return;
+            }
+
+            // TODO remove.
+            console.log(response.data);
+
+            setParticipants(response.data);
+        };
+
         const loadData = async () => {
             await loadEvent();
             await loadCompanyReviews();
+            await loadParticipants();
         };
 
         loadData();
@@ -119,6 +137,36 @@ const UserEventDetailsPage = () => {
 
         return Number.parseFloat((sum / count).toFixed(2));
     }, [companyReviews]);
+
+    const isParticipant = useMemo(
+        () => participants && participants.some((p) => p.id === Number.parseInt(localStorage.getItem("id"))),
+        [participants]
+    );
+
+    const join = async () => {
+        const response = await joinEvent(event.id);
+
+        if (!response.status || response.status >= 300) {
+            displayError(response.data.error);
+            return;
+        }
+
+        setParticipants(response.data);
+    };
+
+    const leave = async () => {
+        const response = await leaveEvent(event.id);
+
+        if (!response.status || response.status >= 300) {
+            displayError(response.data.error);
+            return;
+        }
+
+        // TODO remove.
+        console.log(response.data);
+
+        setParticipants(response.data);
+    };
 
     return (
         <Grid
@@ -220,10 +268,27 @@ const UserEventDetailsPage = () => {
                             </Grid>
                             <Grid container item xs={5.5}>
                                 {/* TODO open modal */}
-                                <Button variant="outlined" style={{ borderWidth: "2px" }}>
+                                <Button
+                                    variant="outlined"
+                                    style={{ borderWidth: "2px" }}
+                                    startIcon={<PersonIcon />}
+                                >
                                     Список участников
                                 </Button>
                             </Grid>
+                            {isParticipant && (
+                                <Grid container item xs={5.5}>
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        style={{ borderWidth: "2px" }}
+                                        startIcon={<ExitIcon />}
+                                        onClick={leave}
+                                    >
+                                        Покинуть мероприятие
+                                    </Button>
+                                </Grid>
+                            )}
                         </Grid>
                     </Grid>
                 </Grid>
@@ -361,7 +426,7 @@ const UserEventDetailsPage = () => {
                                 <Typography variant="h6" style={{ textDecoration: "underline" }}>
                                     Организатор
                                 </Typography>
-                                <Grid container item wrap="no-wrap" gap={2}>
+                                <Grid container item wrap="nowrap" gap={2}>
                                     <Button
                                         style={{ padding: 0 }}
                                         onClick={() => navigate(`/company/${event?.company.id}`)}
@@ -401,19 +466,25 @@ const UserEventDetailsPage = () => {
                         </Grid>
                     </>
                 )}
-                {/* TODO implement joining */}
-                {/* if not joined */}
-                <Container style={{ display: "flex", justifyContent: "center" }}>
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        style={{ height: "40px", borderRadius: "30px", fontSize: "16px" }}
-                    >
-                        Присоединиться
-                    </Button>
-                </Container>
-                {/* TODO implement chat */}
-                {/* if joined */}
+                {participants && isParticipant ? (
+                    <>
+                        <h1>This is chat</h1>
+                        {/* TODO implement chat */}
+                    </>
+                ) : (
+                    <Container style={{ display: "flex", justifyContent: "center" }}>
+                        {participants && (
+                            <Button
+                                variant="contained"
+                                fullWidth
+                                style={{ height: "40px", borderRadius: "30px", fontSize: "16px" }}
+                                onClick={join}
+                            >
+                                Присоединиться
+                            </Button>
+                        )}
+                    </Container>
+                )}
             </Grid>
             <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
                 <Alert onClose={closeSnackbar} severity="error" sx={{ width: "100%" }}>
