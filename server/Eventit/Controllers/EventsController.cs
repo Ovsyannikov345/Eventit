@@ -159,6 +159,22 @@ namespace Eventit.Controllers
             return Ok(result);
         }
 
+        // GET: api/Events/5/participants
+        [HttpGet("{id}/participants")]
+        public async Task<IActionResult> GetEventParticipants(int id)
+        {
+            Event? @event = await _context.Events
+                .Include(e => e.Users)
+                .SingleOrDefaultAsync(e => e.Id == id);
+
+            if (@event == null)
+            {
+                return Ok(new List<Event>());
+            }
+
+            return Ok(_mapper.Map<ICollection<UserDto>>(@event.Users));
+        }
+
         // POST: api/Events/5/join
         [HttpPost("{id}/join")]
         public async Task<IActionResult> JoinEvent(int id)
@@ -204,7 +220,52 @@ namespace Eventit.Controllers
             @event.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(_mapper.Map<ICollection<UserDto>>(@event.Users));
         }
+
+        // POST: api/Events/5/leave
+        [HttpPost("{id}/leave")]
+        public async Task<IActionResult> LeaveEvent(int id)
+        {
+            string? tokenUserId = HttpContext.User.FindFirst("UserId")?.Value;
+
+            if (tokenUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!int.TryParse(tokenUserId, out int userId))
+            {
+                return BadRequest();
+            }
+
+            Event? @event = await _context.Events
+                .Include(e => e.Users)
+                .SingleOrDefaultAsync(e => e.Id == id);
+
+            if (@event == null)
+            {
+                return NotFound();
+            }
+
+            if (!@event.Users.Any(u => u.Id == userId))
+            {
+                return BadRequest("You are not participant");
+            }
+
+            User? user = @event.Users.SingleOrDefault(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            @event.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(_mapper.Map<ICollection<UserDto>>(@event.Users));
+        }
+
+        // TODO implelement event finishing.
     }
 }
