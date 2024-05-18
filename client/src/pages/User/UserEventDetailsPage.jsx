@@ -63,9 +63,6 @@ const UserEventDetailsPage = () => {
                 return;
             }
 
-            // TODO remove.
-            //console.log(response.data);
-
             companyId = response.data.company.id;
             setEvent(response.data);
         };
@@ -88,9 +85,6 @@ const UserEventDetailsPage = () => {
                 displayError(response.data.error);
                 return;
             }
-
-            // TODO remove.
-            console.log(response.data);
 
             setParticipants(response.data);
         };
@@ -161,9 +155,6 @@ const UserEventDetailsPage = () => {
             displayError(response.data.error);
             return;
         }
-
-        // TODO remove.
-        console.log(response.data);
 
         setParticipants(response.data);
     };
