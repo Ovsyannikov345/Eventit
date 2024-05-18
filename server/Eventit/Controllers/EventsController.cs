@@ -119,6 +119,7 @@ namespace Eventit.Controllers
                     .ThenInclude(m => m.User)
                 .Include(c => c.Messages)
                     .ThenInclude(m => m.Company)
+                    .ThenInclude(c => c!.CompanyContactPerson)
                 .FirstOrDefaultAsync(c => c.EventId == id);
 
             if (chat == null)
