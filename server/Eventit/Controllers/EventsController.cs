@@ -4,6 +4,7 @@ using Eventit.Data;
 using Eventit.Models;
 using AutoMapper;
 using Server.DataTranferObjects;
+using Eventit.DataTranferObjects;
 
 namespace Eventit.Controllers
 {
