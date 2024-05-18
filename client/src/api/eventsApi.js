@@ -81,9 +81,29 @@ const getEventChat = async (eventId) => {
     }
 };
 
+const getEventParticipants = async (eventId) => {
+    try {
+        const response = await host.get(`/Events/${eventId}/participants`);
+
+        return response;
+    } catch (error) {
+        if (error.response) {
+            if (error.response.status === 401) {
+                return await updateToken(getEventChat, eventId);
+            }
+
+            return error.response;
+        } else if (error.request) {
+            return { data: { error: "Сервис временно недоступен" } };
+        } else {
+            return { data: { error: "Ошибка при создании запроса" } };
+        }
+    }
+};
+
 const joinEvent = async (id) => {
     try {
-        const response = await host.get(`/Events/${id}/join`);
+        const response = await host.post(`/Events/${id}/join`);
 
         return response;
     } catch (error) {
@@ -101,4 +121,24 @@ const joinEvent = async (id) => {
     }
 };
 
-export { getEvents, postEvent, getEvent, getEventChat, joinEvent };
+const leaveEvent = async (id) => {
+    try {
+        const response = await host.post(`/Events/${id}/leave`);
+
+        return response;
+    } catch (error) {
+        if (error.response) {
+            if (error.response.status === 401) {
+                return await updateToken(joinEvent, id);
+            }
+
+            return error.response;
+        } else if (error.request) {
+            return { data: { error: "Сервис временно недоступен" } };
+        } else {
+            return { data: { error: "Ошибка при создании запроса" } };
+        }
+    }
+};
+
+export { getEvents, postEvent, getEvent, getEventChat, getEventParticipants, joinEvent, leaveEvent };
