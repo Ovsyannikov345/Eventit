@@ -8,11 +8,11 @@ const CompanyEditForm = ({ companyData, cancelHandler, applyCallback }) => {
     const formik = useFormik({
         initialValues: {
             name: companyData.name,
-            contactSurname: companyData.ContactPerson.surname,
-            contactName: companyData.ContactPerson.name,
-            contactPatronymic: companyData.ContactPerson.patronymic,
-            contactEmail: companyData.ContactPerson.email,
-            contactPhone: companyData.ContactPerson.phone,
+            contactSurname: companyData.companyContactPerson.lastName,
+            contactName: companyData.companyContactPerson.firstName,
+            contactPatronymic: companyData.companyContactPerson.patronymic,
+            contactEmail: companyData.companyContactPerson.email,
+            contactPhone: companyData.companyContactPerson.phoneNumber,
         },
         validate: validateCompanyData,
         onSubmit: async (values) => {
@@ -20,11 +20,11 @@ const CompanyEditForm = ({ companyData, cancelHandler, applyCallback }) => {
                 id: companyData.id,
                 name: values.name,
                 contactPersonInfo: {
-                    name: values.contactName,
-                    surname: values.contactSurname,
+                    firstName: values.contactName,
+                    lastName: values.contactSurname,
                     patronymic: values.contactPatronymic,
                     phone: values.contactPhone,
-                    email: values.contactEmail,
+                    phoneNumber: values.contactEmail,
                 },
             };
 

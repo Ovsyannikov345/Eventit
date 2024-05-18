@@ -96,6 +96,11 @@ const CreateEventPage = () => {
             }
         }
 
+        //TODO fix onlineEvent and free bool logic
+
+        const onlineEvent = placeId === null ? true : false;
+        const free = entranceFee === null ? true : false;
+
         // Prepare event data
         const eventData = {
             title,
@@ -105,8 +110,8 @@ const CreateEventPage = () => {
             ageRestriction,
             entranceFee: entranceFee || null,
             placeId: placeId || null,
-            onlineEvent: placeId === null ? false : true,
-            free: entranceFee === null ? false : true,
+            onlineEvent: onlineEvent,
+            free: free,
         };
 
         try {

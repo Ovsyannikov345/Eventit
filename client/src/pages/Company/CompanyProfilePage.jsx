@@ -6,12 +6,13 @@ import NavigateBack from "../../components/NavigateBack";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import { styled } from "@mui/material/styles";
 import moment from "moment";
-//import ProfileCards from "../../components/ProfileCards";
+import ProfileCards from "../../components/ProfileCards";
+import { getCompanyReviews, getCompanyProfile, getCompany, putCompany } from "../../api/companiesApi";
 import { useTheme } from "@emotion/react";
 //import { getCompany, getProfile, updateAvatar } from "../api/companyApi";
 //import { updateCompany } from "../api/companyApi";
 import CompanyReview from "../../components/CompanyReview";
-//import CompanyEditForm from "../../components/forms/CompanyEditForm";
+import CompanyEditForm from "../../components/forms/CompanyEditForm";
 import { useParams } from "react-router-dom";
 
 const VisuallyHiddenInput = styled("input")({
@@ -40,59 +41,71 @@ const CompanyProfilePage = () => {
 
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [companyReviews, setCompanyReviews] = useState(null);
 
     // TODO implement.
-    // useEffect(() => {
-    //     const loadData = async () => {
-    //         const response = id !== undefined ? await getCompany(id) : await getProfile();
+    useEffect(() => {
+         const loadData = async () => {
+             const response = id !== undefined ? await getCompany(id) : await getCompanyProfile();
 
-    //         if (!response) {
-    //             displayError("Сервис временно недоступен");
-    //             return;
-    //         }
+             if (!response) {
+                 displayError("Сервис временно недоступен");
+                 return;
+             }
 
-    //         if (response.status === 401) {
-    //             localStorage.removeItem("jwt");
-    //             localStorage.removeItem("role");
-    //             window.location.reload();
-    //         }
+             if (response.status === 401) {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('role');
+                localStorage.removeItem('refreshToken');
+                localStorage.removeItem('token');
+                 window.location.reload();
+             }
 
-    //         if (response.status >= 300) {
-    //             displayError("Ошибка при загрузке профиля. Код: " + response.status);
-    //             console.log(response);
-    //             return;
-    //         }
+             if (response.status >= 300) {
+                 displayError("Ошибка при загрузке профиля. Код: " + response.status);
+                 console.log(response);
+                 return;
+             }
 
-    //         setCompanyData(response.data);
-    //         setReadonly(id !== undefined);
-    //     };
+             setCompanyData(response.data);
+             setReadonly(id !== undefined);
+         };
 
-    //     loadData();
-    // }, [id]);
+         loadData();
+     }, [id]);
+
+    const loadCompanyReviews = async () => {
+        const response = await getCompanyReviews(companyData.id);
+
+        if (!response.status || response.status >= 300) {
+            displayError(response.data.error);
+            return;
+        }
+
+        setCompanyReviews(response.data);
+    };
 
     const rating = useMemo(() => {
-        try {
-            if (companyData.Orders.map((order) => order.CompanyReviews).length === 0) {
-                return "-";
-            }
 
-            let totalGrade = 0;
-            let count = 0;
-
-            companyData.Orders.forEach((order) => {
-                order.CompanyReviews.forEach((review) => {
-                    totalGrade += review.grade;
-                    count++;
-                });
-            });
-
-            const result = (totalGrade / count).toFixed(2);
-
-            return isNaN(result) ? "-" : result;
-        } catch {
-            return "-";
+        loadCompanyReviews();
+        if (!companyReviews || companyReviews.length === 0) {
+            return null;
         }
-    }, [companyData.Orders]);
+
+        var sum = 0;
+
+        var count = 0;
+
+        companyReviews.forEach((review) => {
+            sum += review.grade;
+            count++;
+        });
+
+        return Number.parseFloat((sum / count).toFixed(2));
+    }, [companyReviews]);
+
+
+
 
     const displayError = (message) => {
         setErrorMessage(message);
@@ -108,24 +121,26 @@ const CompanyProfilePage = () => {
     };
 
     // TODO implement.
-    // const applyChanges = async (updatedCompanyData) => {
-    //     const response = await updateCompany(companyData.id, updatedCompanyData);
+     const applyChanges = async (updatedCompanyData) => {
+         const response = await putCompany(updatedCompanyData);
 
-    //     if (!response) {
-    //         displayError("Сервис временно недоступен");
-    //         return;
-    //     }
+         if (!response) {
+             displayError("Сервис временно недоступен");
+             return;
+         }
 
-    //     if (response.status === 401) {
-    //         localStorage.removeItem("jwt");
-    //         localStorage.removeItem("role");
-    //         window.location.reload();
-    //     }
+         if (response.status === 401) {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('role');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('token');
+             window.location.reload();
+         }
 
-    //     if (response.status >= 300) {
-    //         displayError("Ошибка при изменении данных. Код: " + response.status);
-    //         return;
-    //     }
+         if (response.status >= 300) {
+             displayError("Ошибка при изменении данных. Код: " + response.status);
+             return;
+         }
 
     //     const imageSuccess = await sendImage();
 
@@ -134,7 +149,7 @@ const CompanyProfilePage = () => {
     //         setEditMode(false);
     //         window.location.reload();
     //     }
-    // };
+     };
 
     // TODO implement.
     // const sendImage = async () => {
@@ -174,7 +189,8 @@ const CompanyProfilePage = () => {
             flexDirection={"column"}
             justifyContent={"flex-start"}
             alignItems={"center"}
-            bgcolor={"#E7E7E7"}
+            //bgcolor={"#E7E7E7"}
+            
         >
             {localStorage.getItem("role") === "company" ? <CompanyHeader /> : <UserHeader />}
             <Grid
@@ -185,6 +201,7 @@ const CompanyProfilePage = () => {
                 maxWidth={"1300px"}
                 flexGrow={1}
                 bgcolor={"#FFFFFF"}
+                marginTop={"5vh"}
             >
                 <Grid
                     container
@@ -198,7 +215,8 @@ const CompanyProfilePage = () => {
                     }}
                 >
                     <NavigateBack
-                        label={id === undefined ? "Мои заказы" : "Назад"}
+                    // TODO complete this part
+                        label={id === undefined ? "Главная" : "Назад"}
                         to={id === undefined ? "/my-orders" : -1}
                     />
                     {!readonly && !editMode && companyData.id !== undefined && (
@@ -261,17 +279,18 @@ const CompanyProfilePage = () => {
                     </Grid>
                     {!editMode ? (
                         <>
-                            {/* // TODO implement.
+                            { // TODO implement.
                                 <ProfileCards
                                 registrationDate={
-                                    companyData.createdAt !== undefined
+                                    companyData.registrationDate !== undefined
                                         ? moment.utc(companyData.createdAt).format("DD-MM-YYYY")
                                         : "-"
                                 }
-                                ordersCount={companyData.Orders !== undefined ? companyData.Orders.length : "-"}
+                                //TODO delete or complete
+                                eventsCount={companyData.Events !== undefined ? companyData.Events.length : "-"}
                                 rating={rating}
-                            /> */}
-                            {companyData.ContactPerson !== undefined ? (
+                            /> }
+                            {companyData.companyContactPerson !== undefined ? (
                                 <Grid
                                     container
                                     item
@@ -294,9 +313,9 @@ const CompanyProfilePage = () => {
                                             variant="standard"
                                             label="ФИО контактного лица"
                                             value={[
-                                                companyData.ContactPerson.surname,
-                                                companyData.ContactPerson.name,
-                                                companyData.ContactPerson.patronymic,
+                                                companyData.companyContactPerson.firstName,
+                                                companyData.companyContactPerson.lastName,
+                                                companyData.companyContactPerson.patronymic,
                                             ].join(" ")}
                                             InputProps={{
                                                 readOnly: true,
@@ -314,7 +333,7 @@ const CompanyProfilePage = () => {
                                         <TextField
                                             variant="standard"
                                             label="Эл. почта"
-                                            value={companyData.ContactPerson.email}
+                                            value={companyData.companyContactPerson.email}
                                             InputProps={{
                                                 readOnly: true,
                                                 sx: { fontSize: { xs: "20px", md: "24px" } },
@@ -331,7 +350,7 @@ const CompanyProfilePage = () => {
                                         <TextField
                                             variant="standard"
                                             label="Телефон"
-                                            value={companyData.ContactPerson.phone}
+                                            value={companyData.companyContactPerson.phoneNumber}
                                             InputProps={{
                                                 readOnly: true,
                                                 sx: { fontSize: { xs: "20px", md: "24px" } },
@@ -360,7 +379,7 @@ const CompanyProfilePage = () => {
                                         paddingLeft: { xs: "5px", md: 0 },
                                     }}
                                 >
-                                    {companyData.Orders.map((order) => order.CompanyReviews).length > 0 ? (
+                                    {companyData.Events.map((order) => order.CompanyReviews).length > 0 ? (
                                         <>
                                             <Typography
                                                 variant="h2"
@@ -401,13 +420,11 @@ const CompanyProfilePage = () => {
                             )}{" "}
                         </>
                     ) : (
-                        <></>
-                        // TODO implement.
-                        // <CompanyEditForm
-                        //     companyData={companyData}
-                        //     cancelHandler={() => setEditMode(false)}
-                        //     applyCallback={applyChanges}
-                        // />
+                        <CompanyEditForm
+                            companyData={companyData}
+                            cancelHandler={() => setEditMode(false)}
+                            applyCallback={applyChanges}
+                        />
                     )}
                 </Grid>
             </Grid>
