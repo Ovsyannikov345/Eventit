@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Eventit.Data;
 using Eventit.Models;
@@ -267,6 +267,38 @@ namespace Eventit.Controllers
             return Ok(_mapper.Map<ICollection<UserDto>>(@event.Users));
         }
 
-        // TODO implelement event finishing.
+        // POST: api/Events/5/finish
+        [HttpPost("{id}/finish")]
+        public async Task<IActionResult> FinishEvent(int id)
+        {
+            string? tokenCompanyId = HttpContext.User.FindFirst("CompanyId")?.Value;
+
+            if (tokenCompanyId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!int.TryParse(tokenCompanyId, out int companyId))
+            {
+                return BadRequest();
+            }
+
+            Event? @event = await _context.Events.SingleOrDefaultAsync(e => e.Id == id);
+
+            if (@event == null)
+            {
+                return NotFound();
+            }
+
+            if (@event.IsFinished)
+            {
+                return BadRequest("Event is already finished");
+            }
+
+            @event.IsFinished = true;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
     }
 }
