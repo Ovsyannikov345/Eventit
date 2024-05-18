@@ -9,7 +9,7 @@ const updateToken = async (requestFunction, argument) => {
         const accessToken = response.data.accessToken;
 
         localStorage.setItem("accessToken", accessToken);
-        host.defaults.headers.common["Authorization"] = localStorage.getItem("accessToken");
+        host.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem("accessToken")}`;
 
         if (argument === undefined) {
             return await requestFunction();
