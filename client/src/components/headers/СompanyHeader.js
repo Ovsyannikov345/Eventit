@@ -48,6 +48,7 @@ const handleLogout = () => {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('role');
   localStorage.removeItem('refreshToken');
+  localStorage.removeItem("id");
   window.location.reload();
 };
 

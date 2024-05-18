@@ -63,6 +63,7 @@ const RegistrationPage = () => {
             localStorage.setItem("accessToken", loginResponse.data.accessToken);
             localStorage.setItem("refreshToken", loginResponse.data.refreshToken);
             localStorage.setItem("role", loginResponse.data.role);
+            localStorage.setItem("id", loginResponse.data.id);
             window.location.reload();
         }
 
@@ -89,6 +90,7 @@ const RegistrationPage = () => {
             localStorage.setItem("accessToken", loginResponse.data.accessToken);
             localStorage.setItem("refreshToken", loginResponse.data.refreshToken);
             localStorage.setItem("role", loginResponse.data.role);
+            localStorage.setItem("id", loginResponse.data.id);
             window.location.reload();
         }
     };

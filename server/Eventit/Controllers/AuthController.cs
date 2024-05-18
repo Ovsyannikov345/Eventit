@@ -65,6 +65,7 @@ namespace Server.Controllers
                     AccessToken = token,
                     RefreshToken = refreshToken,
                     Role = "company",
+                    Id = company.Id,
                 });
             }
 
@@ -100,6 +101,7 @@ namespace Server.Controllers
                     AccessToken = token,
                     RefreshToken = refreshToken,
                     Role = "user",
+                    Id = user.Id,
                 });
             }
 
@@ -142,7 +144,7 @@ namespace Server.Controllers
             }
             catch
             {
-                return Unauthorized();
+                return Forbid();
             }
         }
 
