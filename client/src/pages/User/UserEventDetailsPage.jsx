@@ -146,6 +146,7 @@ const UserEventDetailsPage = () => {
         }
 
         setParticipants(response.data);
+        displaySuccess("Вы присоединились к мероприятию");
     };
 
     const leave = async () => {
@@ -157,6 +158,7 @@ const UserEventDetailsPage = () => {
         }
 
         setParticipants(response.data);
+        displaySuccess("Вы покинули мероприятие");
     };
 
     return (
