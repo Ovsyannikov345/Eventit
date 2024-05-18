@@ -15,8 +15,6 @@ import addNoun from "./../../utils/fieldsParser";
 import ShowDetailsButton from "./../../components/buttons/ShowDetailsButton";
 import HideDetailsButton from "./../../components/buttons/HideDetailsButton";
 
-// TODO implement event leaving.
-
 const UserEventDetailsPage = () => {
     const { id } = useParams();
 
@@ -351,20 +349,8 @@ const UserEventDetailsPage = () => {
                                 <Typography variant="h6" style={{ textDecoration: "underline" }}>
                                     Описание
                                 </Typography>
-                                {/* TODO replace with real field */}
                                 <Typography variant="h5">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget risus porta,
-                                    tincidunt turpis at, fermentum nisi. Nam a nisl ut nisi fringilla congue a vel
-                                    urna. Pellentesque habitant morbi tristique senectus et netus et malesuada
-                                    fames ac turpis egestas. Suspendisse potenti. Vestibulum ante ipsum primis in
-                                    faucibus orci luctus et ultrices posuere cubilia Curae donec pharetra, magna
-                                    vestibulum ullamcorper ultrices, erat erat fermentum elit, nec sodales nisl
-                                    nisi, interdum ornare orci ante eget arcu. In hac habitasse platea dictumst.
-                                    Nullam scelerisque, lacus a pharetra posuere, magna nisi consectetur nibh, ut
-                                    faucibus velit magna vel dui. Fusce venenatis, urna eget cursus malesuada,
-                                    tortor eros congue nisl, ut commodo odio purus at ipsum. Donec bibendum
-                                    ullamcorper nulla, quis faucibus velit interdum eu. Nulla facilisi. Sed
-                                    lacinia commodo dui, a ullamcorper velit interdum et. Morbi a ipsum lorem.
+                                    {event?.description || "Описание отсутствует"}
                                 </Typography>
                             </Grid>
                         </Grid>
