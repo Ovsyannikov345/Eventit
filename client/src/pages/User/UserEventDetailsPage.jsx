@@ -479,8 +479,9 @@ const UserEventDetailsPage = () => {
                                     fullWidth
                                     style={{ height: "40px", borderRadius: "30px", fontSize: "16px" }}
                                     onClick={join}
+                                    disabled={event.isFinished}
                                 >
-                                    Присоединиться
+                                    {!event.isFinished ? "Присоединиться" : "Мероприятие завершено"}
                                 </Button>
                             )}
                         </Container>
