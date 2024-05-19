@@ -183,7 +183,7 @@ const CompanyProfilePage = () => {
             flexDirection={"column"}
             justifyContent={"flex-start"}
             alignItems={"center"}
-            //bgcolor={"#E7E7E7"}
+            style={{ backgroundImage: "linear-gradient(#204276, #729CDB)" }}
         >
             {localStorage.getItem("role") === "company" ? <CompanyHeader /> : <UserHeader />}
             <Grid
@@ -214,7 +214,7 @@ const CompanyProfilePage = () => {
                     />
                     {!readonly && !editMode && companyData.id !== undefined && (
                         <IconButton style={{ padding: 0, color: "#000000" }} onClick={() => setEditMode(true)}>
-                            <EditIcon sx={{ fontSize: { xs: 30, md: 40, lg: 50 } }}></EditIcon>
+                            <EditIcon sx={{ fontSize: { xs: 30, md: 40, lg: 30 } }}></EditIcon>
                         </IconButton>
                     )}
                 </Grid>
@@ -251,8 +251,8 @@ const CompanyProfilePage = () => {
                             >
                                 <Typography
                                     variant="h4"
-                                    height={"36px"}
-                                    sx={{ fontSize: { xs: "20px", md: "24px" } }}
+                                    height={"40px"}
+                                    
                                 >
                                     {companyData.name}
                                 </Typography>
@@ -269,13 +269,7 @@ const CompanyProfilePage = () => {
                                 />
                             </Button>
                         )}
-                    </Grid>
-
-
-
-                    
-
-                    
+                    </Grid>            
                     {!editMode ? (
                         <>
                             {
@@ -324,7 +318,7 @@ const CompanyProfilePage = () => {
                                             }}
                                         />
                                     <Typography
-                                        variant="h4"
+                                        variant="h5"
                                         height={"69px"}
                                         display={"flex"}
                                         alignItems={"center"}

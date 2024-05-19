@@ -52,7 +52,7 @@ const CompanyEditForm = ({ companyData, cancelHandler, applyCallback }) => {
                     paddingLeft: { xs: "10px", md: "46px", lg: 0 },
                 }}
             >
-                <Typography variant="h4" height={"69px"} display={"flex"} alignItems={"center"}>
+                <Typography variant="h5" height={"69px"} display={"flex"} alignItems={"center"}>
                     Данные компании
                 </Typography>
                 <Grid container item maxWidth={"768px"} columnGap={"10px"} rowGap={"20px"}>
@@ -110,7 +110,7 @@ const CompanyEditForm = ({ companyData, cancelHandler, applyCallback }) => {
                     ></TextField>
                     </Grid>
                 </Grid>
-                <Typography variant="h4" height={"69px"} display={"flex"} alignItems={"center"}>
+                <Typography variant="h5" height={"69px"} display={"flex"} alignItems={"center"}>
                     Данные контактного лица
                 </Typography>
                 <Grid container item maxWidth={"768px"} columnGap={"10px"} rowGap={"20px"}>

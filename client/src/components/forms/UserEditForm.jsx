@@ -2,26 +2,30 @@ import React from "react";
 import { Grid, Typography, TextField, Button } from "@mui/material";
 import { useFormik } from "formik";
 import validateUserEditData from "../../utils/validateUserEditData";
+import moment from "moment";
 
 const UserEditForm = ({ userData, cancelHandler, applyCallback }) => {
     const formik = useFormik({
         initialValues: {
-            surname: userData.surname,
-            name: userData.name,
+            lastName: userData.lastName,
+            firstName: userData.firstName,
             patronymic: userData.patronymic,
-            age: userData.age,
-            city: userData.city,
+            dateOfBirth: userData.dateOfBirth,
+            email: userData.email,
+            phoneNumber: userData.phoneNumber,
             description: userData.description,
         },
         validate: validateUserEditData,
         onSubmit: async (values) => {
             const updatedUserData = {
                 id: userData.id,
-                surname: values.surname,
-                name: values.name,
+                lastName: values.lastName,
+                firstName: values.firstName,
+                registrationDate: userData.registrationDate,
                 patronymic: values.patronymic !== "" ? values.patronymic : null,
-                age: values.age !== "" ? values.age : null,
-                city: values.city !== "" ? values.city : null,
+                dateOfBirth: values.dateOfBirth !== "" ? values.dateOfBirth : null,
+                email: values.email !== "" ? values.email : null,
+                phoneNumber: values.phoneNumber !== "" ? values.phoneNumber : null,
                 description: values.description !== "" ? values.description : null,
             };
 
@@ -42,24 +46,24 @@ const UserEditForm = ({ userData, cancelHandler, applyCallback }) => {
                     paddingLeft: { xs: "31px", md: "46px", lg: 0 },
                 }}
             >
-                <Typography variant="h2" height={"69px"} display={"flex"} alignItems={"center"}>
+                <Typography variant="h5" height={"69px"} display={"flex"} alignItems={"center"}>
                     Данные профиля
                 </Typography>
                 <Grid container item maxWidth={"768px"} columnGap={"15px"} rowGap={"20px"}>
                     <Grid container item sx={{ maxWidth: { xs: "259px", md: "246px" } }}>
                         <TextField
-                            id="surname"
-                            name="surname"
+                            id="lastName"
+                            name="lastName"
                             fullWidth
                             variant="outlined"
                             label="Фамилия"
-                            value={formik.values.surname ?? ""}
+                            value={formik.values.lastName ?? ""}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.surname && formik.errors.surname !== undefined}
+                            error={formik.touched.lastName && formik.errors.lastName !== undefined}
                             helperText={
-                                formik.touched.surname && formik.errors.surname !== undefined
-                                    ? formik.errors.surname
+                                formik.touched.lastName && formik.errors.lastName !== undefined
+                                    ? formik.errors.lastName
                                     : ""
                             }
                             required
@@ -67,17 +71,17 @@ const UserEditForm = ({ userData, cancelHandler, applyCallback }) => {
                     </Grid>
                     <Grid container item sx={{ maxWidth: { xs: "259px", md: "246px" } }}>
                         <TextField
-                            id="name"
-                            name="name"
+                            id="firstName"
+                            name="firstName"
                             fullWidth
                             variant="outlined"
                             label="Имя"
-                            value={formik.values.name ?? ""}
+                            value={formik.values.firstName ?? ""}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.name && formik.errors.name !== undefined}
+                            error={formik.touched.firstName && formik.errors.firstName !== undefined}
                             helperText={
-                                formik.touched.name && formik.errors.name !== undefined ? formik.errors.name : ""
+                                formik.touched.firstName && formik.errors.firstName !== undefined ? formik.errors.firstName : ""
                             }
                             required
                         ></TextField>
@@ -102,33 +106,49 @@ const UserEditForm = ({ userData, cancelHandler, applyCallback }) => {
                     </Grid>
                     <Grid container item sx={{ maxWidth: { xs: "259px", md: "246px" } }}>
                         <TextField
-                            id="age"
-                            name="age"
+                            id="dateOfBirth"
+                            name="dateOfBirth"
                             fullWidth
                             variant="outlined"
-                            label="Возраст"
-                            value={formik.values.age ?? ""}
+                            label="Дата рождения"
+                            value={formik.values.dateOfBirth ? moment(formik.values.dateOfBirth).format('YYYY-MM-DD') : ""}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.age && formik.errors.age !== undefined}
+                            error={formik.touched.dateOfBirth && formik.errors.dateOfBirth !== undefined}
                             helperText={
-                                formik.touched.age && formik.errors.age !== undefined ? formik.errors.age : ""
+                                formik.touched.dateOfBirth && formik.errors.dateOfBirth !== undefined ? formik.errors.dateOfBirth : ""
                             }
                         ></TextField>
                     </Grid>
                     <Grid container item sx={{ maxWidth: { xs: "259px", md: "246px" } }}>
                         <TextField
-                            id="city"
-                            name="city"
+                            id="email"
+                            name="email"
                             fullWidth
                             variant="outlined"
-                            label="Город"
-                            value={formik.values.city ?? ""}
+                            label="Эл. почта"
+                            value={formik.values.email ?? ""}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.city && formik.errors.city !== undefined}
+                            error={formik.touched.email && formik.errors.email !== undefined}
                             helperText={
-                                formik.touched.city && formik.errors.city !== undefined ? formik.errors.city : ""
+                                formik.touched.email && formik.errors.email !== undefined ? formik.errors.email : ""
+                            }
+                        ></TextField>
+                    </Grid>
+                    <Grid container item sx={{ maxWidth: { xs: "259px", md: "246px" } }}>
+                        <TextField
+                            id="phoneNumber"
+                            name="phoneNumber"
+                            fullWidth
+                            variant="outlined"
+                            label="Телефон"
+                            value={formik.values.phoneNumber ?? ""}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.phoneNumber && formik.errors.phoneNumber !== undefined}
+                            helperText={
+                                formik.touched.phoneNumber && formik.errors.phoneNumber !== undefined ? formik.errors.phoneNumber : ""
                             }
                         ></TextField>
                     </Grid>
