@@ -9,6 +9,7 @@ import SupportIcon from "@mui/icons-material/Support";
 import LogoutIcon from "@mui/icons-material/Logout";
 import styled from "styled-components";
 import SupportRequestModal from "../modals/SupportRequestModal";
+import { useNavigate } from "react-router-dom";
 
 const LogoContainer = styled.div`
     width: 120px;
@@ -46,6 +47,8 @@ const handleLogout = () => {
 };
 
 const UserHeader = () => {
+    const navigate = useNavigate();
+
     const [supportRequestModalOpen, setSupportRequestModalOpen] = useState(false);
 
     const [error, setError] = useState(false);
@@ -87,11 +90,11 @@ const UserHeader = () => {
                     </LogoContainer>
                     <Navigation>
                         <Grid container gap={"10px"} ml={"20px"}>
-                            {/* TODO implement */}
                             <Button
                                 color="inherit"
                                 startIcon={<SearchIcon />}
                                 sx={{ borderBottom: "1px solid #555", borderRadius: "0px" }}
+                                onClick={() => navigate("/events")}
                             >
                                 Поиск мероприятия
                             </Button>
@@ -110,8 +113,12 @@ const UserHeader = () => {
                         <IconButton color="inherit" title="Уведомления" sx={{ fontSize: "30px" }}>
                             <NotificationsIcon fontSize="20px" />
                         </IconButton>
-                        {/* TODO implement */}
-                        <IconButton color="inherit" title="Профиль" sx={{ fontSize: "30px" }}>
+                        <IconButton
+                            color="inherit"
+                            title="Профиль"
+                            sx={{ fontSize: "30px" }}
+                            onClick={() => navigate("/user")}
+                        >
                             <AccountCircleIcon fontSize="20px" />
                         </IconButton>
                         <IconButton
