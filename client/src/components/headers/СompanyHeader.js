@@ -1,5 +1,5 @@
-import React from "react";
-import { AppBar, Toolbar, Button, IconButton, Grid } from "@mui/material";
+import React, { useState } from "react";
+import { AppBar, Toolbar, Button, IconButton, Grid, Snackbar, Alert } from "@mui/material";
 import Logo from "../../img/logo.png";
 import CreateIcon from "@mui/icons-material/AddBox";
 import EventIcon from "@mui/icons-material/Event";
@@ -8,6 +8,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SupportIcon from "@mui/icons-material/Support";
 import LogoutIcon from "@mui/icons-material/Logout";
 import styled from "styled-components";
+import SupportRequestModal from "../modals/SupportRequestModal";
 
 const LogoContainer = styled.div`
     width: 120px;
@@ -45,51 +46,104 @@ const handleLogout = () => {
 };
 
 const CompanyHeader = () => {
+    const [supportRequestModalOpen, setSupportRequestModalOpen] = useState(false);
+
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [success, setSuccess] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
+
+    const displayError = (message) => {
+        setErrorMessage(message);
+        setError(true);
+    };
+
+    const displaySuccess = (message) => {
+        setSuccessMessage(message);
+        setSuccess(true);
+    };
+
+    const closeSnackbar = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setSuccess(false);
+        setError(false);
+    };
+
     return (
-        <AppBar position="fixed" sx={{ flexDirection: "row", justifyContent: "center" }}>
-            <Toolbar sx={{ justifyContent: "space-between", width: "100%", maxWidth: "1300px" }}>
-                <LogoContainer>
-                    <StyledLogo src={Logo} alt="Logo" />
-                </LogoContainer>
-                <Navigation>
-                    <Grid container gap={"10px"} ml={"20px"}>
+        <>
+            <SupportRequestModal
+                isOpen={supportRequestModalOpen}
+                onClose={() => setSupportRequestModalOpen(false)}
+                displaySuccess={displaySuccess}
+                displayError={displayError}
+            />
+            <AppBar position="fixed" sx={{ flexDirection: "row", justifyContent: "center" }}>
+                <Toolbar sx={{ justifyContent: "space-between", width: "100%", maxWidth: "1300px" }}>
+                    <LogoContainer>
+                        <StyledLogo src={Logo} alt="Logo" />
+                    </LogoContainer>
+                    <Navigation>
+                        <Grid container gap={"10px"} ml={"20px"}>
+                            {/* TODO implement */}
+                            <Button
+                                color="inherit"
+                                startIcon={<CreateIcon />}
+                                sx={{ borderBottom: "1px solid #555", borderRadius: "0px" }}
+                            >
+                                Создать мероприятие
+                            </Button>
+                            {/* TODO implement */}
+                            <Button
+                                color="inherit"
+                                startIcon={<EventIcon />}
+                                sx={{ borderBottom: "1px solid #555", borderRadius: "0px" }}
+                            >
+                                Ваши мероприятия
+                            </Button>
+                        </Grid>
+                    </Navigation>
+                    <Activity>
                         {/* TODO implement */}
-                        <Button
-                            color="inherit"
-                            startIcon={<CreateIcon />}
-                            sx={{ borderBottom: "1px solid #555", borderRadius: "0px" }}
-                        >
-                            Создать мероприятие
-                        </Button>
+                        <IconButton color="inherit" title="Уведомления" sx={{ fontSize: "30px" }}>
+                            <NotificationsIcon fontSize="20px" />
+                        </IconButton>
                         {/* TODO implement */}
-                        <Button
+                        <IconButton color="inherit" title="Профиль" sx={{ fontSize: "30px" }}>
+                            <AccountCircleIcon fontSize="20px" />
+                        </IconButton>
+                        <IconButton
                             color="inherit"
-                            startIcon={<EventIcon />}
-                            sx={{ borderBottom: "1px solid #555", borderRadius: "0px" }}
+                            title="Техническая поддержка"
+                            sx={{ fontSize: "30px" }}
+                            onClick={() => setSupportRequestModalOpen(true)}
                         >
-                            Ваши мероприятия
-                        </Button>
-                    </Grid>
-                </Navigation>
-                <Activity>
-                    {/* TODO implement */}
-                    <IconButton color="inherit" title="Уведомления" sx={{ fontSize: "30px" }}>
-                        <NotificationsIcon fontSize="20px" />
-                    </IconButton>
-                    {/* TODO implement */}
-                    <IconButton color="inherit" title="Профиль" sx={{ fontSize: "30px" }}>
-                        <AccountCircleIcon fontSize="20px" />
-                    </IconButton>
-                    {/* TODO implement */}
-                    <IconButton color="inherit" title="Техническая поддержка" sx={{ fontSize: "30px" }}>
-                        <SupportIcon fontSize="20px" />
-                    </IconButton>
-                    <IconButton color="inherit" title="Выход" sx={{ fontSize: "30px" }} onClick={handleLogout}>
-                        <LogoutIcon fontSize="20px" />
-                    </IconButton>
-                </Activity>
-            </Toolbar>
-        </AppBar>
+                            <SupportIcon fontSize="20px" />
+                        </IconButton>
+                        <IconButton
+                            color="inherit"
+                            title="Выход"
+                            sx={{ fontSize: "30px" }}
+                            onClick={handleLogout}
+                        >
+                            <LogoutIcon fontSize="20px" />
+                        </IconButton>
+                    </Activity>
+                </Toolbar>
+            </AppBar>
+            <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
+                <Alert onClose={closeSnackbar} severity="error" sx={{ width: "100%" }}>
+                    {errorMessage}
+                </Alert>
+            </Snackbar>
+            <Snackbar open={success} autoHideDuration={6000} onClose={closeSnackbar}>
+                <Alert onClose={closeSnackbar} severity="success" sx={{ width: "100%" }}>
+                    {successMessage}
+                </Alert>
+            </Snackbar>
+        </>
     );
 };
 
