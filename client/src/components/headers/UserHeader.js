@@ -10,6 +10,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import styled from "styled-components";
 import SupportRequestModal from "../modals/SupportRequestModal";
 import { useNavigate } from "react-router-dom";
+import { EVENTS_ROUTE, USER_EVENTS_ROUTE, USER_PROFILE_ROUTE } from "../../utils/consts";
 
 const LogoContainer = styled.div`
     width: 120px;
@@ -94,15 +95,15 @@ const UserHeader = () => {
                                 color="inherit"
                                 startIcon={<SearchIcon />}
                                 sx={{ borderBottom: "1px solid #555", borderRadius: "0px" }}
-                                onClick={() => navigate("/events")}
+                                onClick={() => navigate(EVENTS_ROUTE)}
                             >
                                 Поиск мероприятия
                             </Button>
-                            {/* TODO implement */}
                             <Button
                                 color="inherit"
                                 startIcon={<EventIcon />}
                                 sx={{ borderBottom: "1px solid #555", borderRadius: "0px" }}
+                                onClick={() => navigate(USER_EVENTS_ROUTE)}
                             >
                                 Ваши мероприятия
                             </Button>
@@ -117,7 +118,7 @@ const UserHeader = () => {
                             color="inherit"
                             title="Профиль"
                             sx={{ fontSize: "30px" }}
-                            onClick={() => navigate("/user")}
+                            onClick={() => navigate(USER_PROFILE_ROUTE)}
                         >
                             <AccountCircleIcon fontSize="20px" />
                         </IconButton>
