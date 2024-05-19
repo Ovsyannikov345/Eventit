@@ -120,7 +120,7 @@ public partial class EventitDbContext : DbContext
         modelBuilder.Entity<Message>(entity =>
         {
             entity.Property(e => e.Text)
-                  .HasMaxLength(255)
+                  .HasMaxLength(500)
                   .IsUnicode(true);
             entity.Property(e => e.CreationDate)
                   .HasDefaultValueSql("(getdate())")
