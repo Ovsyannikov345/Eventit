@@ -70,8 +70,10 @@ namespace Eventit.Controllers
 
                 supportRequest.UserId = userId;
             }
-
-            supportRequest.CompanyId = companyId;
+            else
+            {
+                supportRequest.CompanyId = companyId;
+            }
 
             _context.SupportRequests.Add(supportRequest);
             await _context.SaveChangesAsync();
