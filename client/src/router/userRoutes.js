@@ -9,13 +9,13 @@ import {
 import CompanyProfilePage from "../pages/Company/CompanyProfilePage";
 import UserProfilePage from "../pages/User/UserProfilePage";
 import UserEventDetailsPage from "../pages/User/UserEventDetailsPage";
+import UserSearchEventsPage from "../pages/User/UserSearchEventsPage";
 
 export const userRoutes = [
-    // TODO implement.
-    // {
-    //     path: EVENTS_ROUTE,
-    //     Component: AvailableEventsPage,
-    // },
+    {
+        path: EVENTS_ROUTE,
+        Component: UserSearchEventsPage,
+    },
     {
         path: USER_EVENT_DETAILS_ROUTE,
         Component: UserEventDetailsPage,
