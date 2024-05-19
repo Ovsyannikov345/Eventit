@@ -24,6 +24,8 @@ public partial class Event
     public bool Free { get; set; }
 
     public bool IsFinished { get; set; }
+    
+    public DateTime CreationDate { get; set; }
 
     public int CompanyId { get; set; }
 

@@ -106,6 +106,9 @@ public partial class EventitDbContext : DbContext
                   .HasDefaultValueSql("((1))");
             entity.Property(e => e.OnlineEvent)
                   .HasDefaultValueSql("((1))");
+            entity.Property(e => e.CreationDate)
+                  .HasDefaultValueSql("(getdate())")
+                  .HasColumnType("datetime");
         });
 
         modelBuilder.Entity<EventReview>(entity =>

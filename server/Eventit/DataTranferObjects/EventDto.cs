@@ -23,6 +23,8 @@ namespace Server.DataTranferObjects
 
         public bool Free { get; set; }
 
+        public DateTime CreationDate { get; set; }
+
         public bool IsFinished { get; set; }
 
         public CompanyDto Company { get; set; } = null!;
