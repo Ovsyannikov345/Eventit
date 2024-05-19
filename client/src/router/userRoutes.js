@@ -10,6 +10,7 @@ import CompanyProfilePage from "../pages/Company/CompanyProfilePage";
 import UserProfilePage from "../pages/User/UserProfilePage";
 import UserEventDetailsPage from "../pages/User/UserEventDetailsPage";
 import UserSearchEventsPage from "../pages/User/UserSearchEventsPage";
+import UserEventsPage from "../pages/User/UserEventsPage";
 
 export const userRoutes = [
     {
@@ -20,11 +21,10 @@ export const userRoutes = [
         path: USER_EVENT_DETAILS_ROUTE,
         Component: UserEventDetailsPage,
     },
-    // TODO implement.
-    // {
-    //     path: USER_EVENTS_ROUTE,
-    //     Component: UserEventsPage,
-    // },
+    {
+        path: USER_EVENTS_ROUTE,
+        Component: UserEventsPage,
+    },
     {
         path: SPECIFIC_COMPANY_PROFILE_ROUTE,
         Component: CompanyProfilePage,
