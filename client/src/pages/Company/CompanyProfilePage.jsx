@@ -116,13 +116,8 @@ const CompanyProfilePage = () => {
             displayError("Сервис временно недоступен");
             return;
         }
-        
 
-        setCompanyData(response.data);
-        setEditMode(false);
-        window.location.reload();
-
-        if (response.status === 200) {
+        if (response.status === 204) {
             setCompanyData(response.data);
             setEditMode(false);
             window.location.reload();
@@ -298,7 +293,6 @@ const CompanyProfilePage = () => {
                                     rating={rating}
                                 />
                             }
-
 
                             {companyData.companyContactPerson !== undefined ? (
                                 <Grid
