@@ -82,9 +82,6 @@ const UserSearchEventsPage = () => {
                 return;
             }
 
-            //TODO remove.
-            console.log(response.data);
-
             setEvents(response.data);
         };
 
