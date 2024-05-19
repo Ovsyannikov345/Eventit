@@ -21,6 +21,26 @@ const getEvents = async () => {
     }
 };
 
+const getSelfEvents = async () => {
+    try {
+        const response = await host.get("/Events/my");
+
+        return response;
+    } catch (error) {
+        if (error.response) {
+            if (error.response.status === 401) {
+                return await updateToken(getEvents);
+            }
+
+            return error.response;
+        } else if (error.request) {
+            return { data: { error: "Сервис временно недоступен" } };
+        } else {
+            return { data: { error: "Ошибка при создании запроса" } };
+        }
+    }
+};
+
 const postEvent = async (eventData) => {
     try {
         const response = await host.post("/Events", eventData);
@@ -141,4 +161,13 @@ const leaveEvent = async (id) => {
     }
 };
 
-export { getEvents, postEvent, getEvent, getEventChat, getEventParticipants, joinEvent, leaveEvent };
+export {
+    getEvents,
+    getSelfEvents,
+    postEvent,
+    getEvent,
+    getEventChat,
+    getEventParticipants,
+    joinEvent,
+    leaveEvent,
+};

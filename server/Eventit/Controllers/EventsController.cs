@@ -41,6 +41,57 @@ namespace Eventit.Controllers
             return Ok(mappedEvents);
         }
 
+        // GET: api/Events/my
+        [HttpGet("my")]
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetSelfEvents()
+        {
+            if (_context.Events == null)
+            {
+                return NotFound();
+            }
+
+            string? tokenCompanyId = HttpContext.User.FindFirst("CompanyId")?.Value;
+
+            string? tokenUserId = HttpContext.User.FindFirst("UserId")?.Value;
+
+            if (tokenCompanyId == null && tokenUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!int.TryParse(tokenCompanyId, out int companyId))
+            {
+                if (!int.TryParse(tokenUserId, out int userId))
+                {
+                    return BadRequest();
+                }
+
+                var user = await _context.Users
+                    .Include(u => u.Events)
+                        .ThenInclude(e => e.Company)
+                    .Include(u => u.Events)
+                        .ThenInclude(e => e.Place)
+                    .SingleOrDefaultAsync(u => u.Id == userId);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(_mapper.Map<ICollection<EventDto>>(user.Events));
+            }
+            else
+            {
+                var events = await _context.Events
+                    .Where(e => e.CompanyId == companyId)
+                    .Include(e => e.Company)
+                    .Include(e => e.Place)
+                    .ToListAsync();
+
+                return Ok(_mapper.Map<ICollection<EventDto>>(events));
+            }
+        }
+
         // GET: api/Events/5
         [HttpGet("{id}")]
         public async Task<ActionResult<EventDto>> GetEvent(int id)
