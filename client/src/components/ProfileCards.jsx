@@ -15,10 +15,10 @@ const ProfileCards = ({ registrationDate, eventCount, rating }) => {
         <Grid container item width={"194px"} gap={"15px"}>
           <CalendarIcon sx={{ fontSize: 50 }} />
           <Grid>
-            <Typography variant="h3" height={"23px"} display={"flex"} alignItems={"center"}>
+            <Typography variant="h6" height={"23px"} display={"flex"} alignItems={"center"}>
               В сервисе с
             </Typography>
-            <Typography variant="h2">{registrationDate}</Typography>
+            <Typography variant="h5">{registrationDate}</Typography>
           </Grid>
         </Grid>
       )}
@@ -26,10 +26,10 @@ const ProfileCards = ({ registrationDate, eventCount, rating }) => {
         <Grid container item width={"194px"} gap={"15px"}>
           <ListIcon sx={{ fontSize: 50 }} />
           <Grid>
-            <Typography variant="h3" height={"23px"} display={"flex"} alignItems={"center"}>
+            <Typography variant="h6" height={"23px"} display={"flex"} alignItems={"center"}>
               Мероприятий
             </Typography>
-            <Typography variant="h2">{eventCount}</Typography>
+            <Typography variant="h5">{eventCount}</Typography>
           </Grid>
         </Grid>
       )}
@@ -37,10 +37,10 @@ const ProfileCards = ({ registrationDate, eventCount, rating }) => {
         <Grid container item width={"194px"} gap={"15px"}>
           <StarIcon sx={{ fontSize: 50 }} />
           <Grid>
-            <Typography variant="h3" height={"23px"} display={"flex"} alignItems={"center"}>
+            <Typography variant="h6" height={"23px"} display={"flex"} alignItems={"center"}>
               Рейтинг
             </Typography>
-            <Typography variant="h2">{rating}</Typography>
+            <Typography variant="h5">{rating}</Typography>
           </Grid>
         </Grid>
       )}

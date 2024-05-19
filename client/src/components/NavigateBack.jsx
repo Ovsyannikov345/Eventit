@@ -13,7 +13,7 @@ const NavigateBack = ({ to, label }) => {
             <IconButton style={{ padding: 0, color: "#000000" }} onClick={() => navigate(to)}>
                 <ArrowBackIcon sx={{ fontSize: {xs: 30, md: 50} }} />
             </IconButton>
-            <Typography variant="h2">{isScreenSizeUpMd ? label : ""}</Typography>
+            <Typography variant="h4">{isScreenSizeUpMd ? label : ""}</Typography>
         </Grid>
     );
 };

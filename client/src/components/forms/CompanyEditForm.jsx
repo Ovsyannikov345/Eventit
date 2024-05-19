@@ -8,6 +8,8 @@ const CompanyEditForm = ({ companyData, cancelHandler, applyCallback }) => {
     const formik = useFormik({
         initialValues: {
             name: companyData.name,
+            email:companyData.email,
+            registrationNumber:companyData.registrationNumber,
             contactSurname: companyData.companyContactPerson.lastName,
             contactName: companyData.companyContactPerson.firstName,
             contactPatronymic: companyData.companyContactPerson.patronymic,
@@ -18,13 +20,17 @@ const CompanyEditForm = ({ companyData, cancelHandler, applyCallback }) => {
         onSubmit: async (values) => {
             const updatedCompanyData = {
                 id: companyData.id,
+                registrationDate: companyData.registrationDate,
                 name: values.name,
-                contactPersonInfo: {
+                email: values.email,
+                registrationNumber:values.registrationNumber,
+                companyContactPerson: {
+                    id: companyData.companyContactPerson.id,
                     firstName: values.contactName,
                     lastName: values.contactSurname,
                     patronymic: values.contactPatronymic,
-                    phone: values.contactPhone,
-                    phoneNumber: values.contactEmail,
+                    phoneNumber: values.contactPhone,
+                    email: values.contactEmail,
                 },
             };
 
@@ -46,10 +52,11 @@ const CompanyEditForm = ({ companyData, cancelHandler, applyCallback }) => {
                     paddingLeft: { xs: "10px", md: "46px", lg: 0 },
                 }}
             >
-                <Typography variant="h2" height={"69px"} display={"flex"} alignItems={"center"}>
+                <Typography variant="h4" height={"69px"} display={"flex"} alignItems={"center"}>
                     Данные компании
                 </Typography>
-                <Grid container item maxWidth={"300px"}>
+                <Grid container item maxWidth={"768px"} columnGap={"10px"} rowGap={"20px"}>
+                <Grid container item maxWidth={"246px"}>
                     <TextField
                         id="name"
                         name="name"
@@ -65,8 +72,45 @@ const CompanyEditForm = ({ companyData, cancelHandler, applyCallback }) => {
                         }
                         required
                     ></TextField>
+                    </Grid>
+                    <Grid container item maxWidth={"246px"}>
+                    <TextField
+                        id="email"
+                        name="email"
+                        fullWidth
+                        variant="outlined"
+                        label="Эл. почта"
+                        value={formik.values.email}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.email && formik.errors.email !== undefined}
+                        helperText={
+                            formik.touched.email && formik.errors.email !== undefined
+                                ? formik.errors.email
+                                : ""
+                        }
+                        required
+                    ></TextField>
+                    </Grid>
+                    <Grid container item maxWidth={"246px"}>
+                    <TextField
+                        id="registrationNumber"
+                        name="registrationNumber"
+                        fullWidth
+                        variant="outlined"
+                        label="Регистрационный номер"
+                        value={formik.values.registrationNumber}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.registrationNumber && formik.errors.registrationNumber !== undefined}
+                        helperText={
+                            formik.touched.registrationNumber && formik.errors.registrationNumber !== undefined ? formik.errors.registrationNumber : ""
+                        }
+                        required
+                    ></TextField>
+                    </Grid>
                 </Grid>
-                <Typography variant="h2" height={"69px"} display={"flex"} alignItems={"center"}>
+                <Typography variant="h4" height={"69px"} display={"flex"} alignItems={"center"}>
                     Данные контактного лица
                 </Typography>
                 <Grid container item maxWidth={"768px"} columnGap={"10px"} rowGap={"20px"}>

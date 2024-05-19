@@ -9,8 +9,6 @@ import moment from "moment";
 import ProfileCards from "../../components/ProfileCards";
 import { getCompanyReviews, getCompanyProfile, getCompany, putCompany } from "../../api/companiesApi";
 import { useTheme } from "@emotion/react";
-//import { getCompany, getProfile, updateAvatar } from "../api/companyApi";
-//import { updateCompany } from "../api/companyApi";
 import CompanyReview from "../../components/CompanyReview";
 import CompanyEditForm from "../../components/forms/CompanyEditForm";
 import { useParams } from "react-router-dom";
@@ -45,49 +43,41 @@ const CompanyProfilePage = () => {
 
     // TODO implement.
     useEffect(() => {
-         const loadData = async () => {
-             const response = id !== undefined ? await getCompany(id) : await getCompanyProfile();
+        var companyId;
 
-             if (!response) {
-                 displayError("Сервис временно недоступен");
-                 return;
-             }
+        const loadCompanyData = async () => {
+            const response = id !== undefined ? await getCompany(id) : await getCompanyProfile();
 
-             if (response.status === 401) {
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('role');
-                localStorage.removeItem('refreshToken');
-                localStorage.removeItem('token');
-                 window.location.reload();
-             }
+            if (!response.status || response.status >= 300) {
+                displayError(response.data.error);
+                return;
+            }
 
-             if (response.status >= 300) {
-                 displayError("Ошибка при загрузке профиля. Код: " + response.status);
-                 console.log(response);
-                 return;
-             }
+            companyId = response.data.id;
+            setCompanyData(response.data);
+            setReadonly(id !== undefined);
+        };
 
-             setCompanyData(response.data);
-             setReadonly(id !== undefined);
-         };
+        const loadCompanyReviews = async () => {
+            const response = await getCompanyReviews(companyId);
 
-         loadData();
-     }, [id]);
+            if (!response.status || response.status >= 300) {
+                displayError(response.data.error);
+                return;
+            }
 
-    const loadCompanyReviews = async () => {
-        const response = await getCompanyReviews(companyData.id);
+            setCompanyReviews(response.data);
+        };
 
-        if (!response.status || response.status >= 300) {
-            displayError(response.data.error);
-            return;
-        }
+        const loadData = async () => {
+            await loadCompanyData();
+            await loadCompanyReviews();
+        };
 
-        setCompanyReviews(response.data);
-    };
+        loadData();
+    }, [id]);
 
     const rating = useMemo(() => {
-
-        loadCompanyReviews();
         if (!companyReviews || companyReviews.length === 0) {
             return null;
         }
@@ -104,9 +94,6 @@ const CompanyProfilePage = () => {
         return Number.parseFloat((sum / count).toFixed(2));
     }, [companyReviews]);
 
-
-
-
     const displayError = (message) => {
         setErrorMessage(message);
         setError(true);
@@ -121,35 +108,47 @@ const CompanyProfilePage = () => {
     };
 
     // TODO implement.
-     const applyChanges = async (updatedCompanyData) => {
-         const response = await putCompany(updatedCompanyData);
+    const applyChanges = async (updatedCompanyData) => {
+        console.log("Updated Company Data:", updatedCompanyData);
+        const response = await putCompany(updatedCompanyData);
 
-         if (!response) {
-             displayError("Сервис временно недоступен");
-             return;
-         }
+        if (!response) {
+            displayError("Сервис временно недоступен");
+            return;
+        }
+        
 
-         if (response.status === 401) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('role');
-            localStorage.removeItem('refreshToken');
-            localStorage.removeItem('token');
-             window.location.reload();
-         }
+        setCompanyData(response.data);
+        setEditMode(false);
+        window.location.reload();
 
-         if (response.status >= 300) {
-             displayError("Ошибка при изменении данных. Код: " + response.status);
-             return;
-         }
+        if (response.status === 200) {
+            setCompanyData(response.data);
+            setEditMode(false);
+            window.location.reload();
+          }
 
-    //     const imageSuccess = await sendImage();
+        if (response.status === 401) {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("role");
+            localStorage.removeItem("refreshToken");
+            localStorage.removeItem("token");
+            window.location.reload();
+        }
 
-    //     if (imageSuccess) {
-    //         setCompanyData(response.data);
-    //         setEditMode(false);
-    //         window.location.reload();
-    //     }
-     };
+        if (response.status >= 300) {
+            displayError("Ошибка при изменении данных. Код: " + response.status);
+            return;
+        }
+
+        //     const imageSuccess = await sendImage();
+
+        //     if (imageSuccess) {
+        //         setCompanyData(response.data);
+        //         setEditMode(false);
+        //         window.location.reload();
+        //     }
+    };
 
     // TODO implement.
     // const sendImage = async () => {
@@ -190,7 +189,6 @@ const CompanyProfilePage = () => {
             justifyContent={"flex-start"}
             alignItems={"center"}
             //bgcolor={"#E7E7E7"}
-            
         >
             {localStorage.getItem("role") === "company" ? <CompanyHeader /> : <UserHeader />}
             <Grid
@@ -215,7 +213,7 @@ const CompanyProfilePage = () => {
                     }}
                 >
                     <NavigateBack
-                    // TODO complete this part
+                        // TODO complete this part
                         label={id === undefined ? "Главная" : "Назад"}
                         to={id === undefined ? "/my-orders" : -1}
                     />
@@ -257,13 +255,13 @@ const CompanyProfilePage = () => {
                                 sx={{ maxWidth: { xs: "253px", md: "430px" } }}
                             >
                                 <Typography
-                                    variant="h2"
+                                    variant="h4"
                                     height={"36px"}
                                     sx={{ fontSize: { xs: "20px", md: "24px" } }}
                                 >
                                     {companyData.name}
                                 </Typography>
-                                <Typography variant="h3">{companyData.email}</Typography>
+                                <Typography variant="h6">{companyData.email}</Typography>
                             </Grid>
                         ) : (
                             <Button component="label" variant="outlined">
@@ -277,19 +275,31 @@ const CompanyProfilePage = () => {
                             </Button>
                         )}
                     </Grid>
+
+
+
+                    
+
+                    
                     {!editMode ? (
                         <>
-                            { // TODO implement.
+                            {
+                                // TODO implement.
                                 <ProfileCards
-                                registrationDate={
-                                    companyData.registrationDate !== undefined
-                                        ? moment.utc(companyData.createdAt).format("DD-MM-YYYY")
-                                        : "-"
-                                }
-                                //TODO delete or complete
-                                eventsCount={companyData.Events !== undefined ? companyData.Events.length : "-"}
-                                rating={rating}
-                            /> }
+                                    registrationDate={
+                                        companyData.registrationDate !== undefined
+                                            ? moment.utc(companyData.createdAt).format("DD-MM-YYYY")
+                                            : "-"
+                                    }
+                                    //TODO delete or complete
+                                    eventsCount={
+                                        companyData.Events !== undefined ? companyData.Events.length : "-"
+                                    }
+                                    rating={rating}
+                                />
+                            }
+
+
                             {companyData.companyContactPerson !== undefined ? (
                                 <Grid
                                     container
@@ -300,8 +310,27 @@ const CompanyProfilePage = () => {
                                         marginTop: { xs: "10px", md: "50px" },
                                     }}
                                 >
+                                        <TextField
+                                            variant="standard"
+                                            label="Регистарционный номер"
+                                            value={companyData.registrationNumber}
+                                            InputProps={{
+                                                readOnly: true,
+                                                sx: { fontSize: { xs: "20px", md: "24px" } },
+                                            }}
+                                            sx={{
+                                                maxWidth:"394px",
+                                                marginBottom:"3vh",
+                                                "& .MuiInput-underline:before": {
+                                                    borderBottomColor: theme.palette.primary.main,
+                                                },
+                                                "& .MuiInput-underline:after": {
+                                                    borderBottomColor: theme.palette.primary.main,
+                                                },
+                                            }}
+                                        />
                                     <Typography
-                                        variant="h2"
+                                        variant="h4"
                                         height={"69px"}
                                         display={"flex"}
                                         alignItems={"center"}
@@ -369,7 +398,7 @@ const CompanyProfilePage = () => {
                             ) : (
                                 <></>
                             )}
-                            {companyData.Orders !== undefined ? (
+                            {companyData.Events !== undefined ? (
                                 <Grid
                                     container
                                     item
@@ -379,10 +408,10 @@ const CompanyProfilePage = () => {
                                         paddingLeft: { xs: "5px", md: 0 },
                                     }}
                                 >
-                                    {companyData.Events.map((order) => order.CompanyReviews).length > 0 ? (
+                                    {companyData.Events.map((event) => event.CompanyReviews).length > 0 ? (
                                         <>
                                             <Typography
-                                                variant="h2"
+                                                variant="h4"
                                                 height={"69px"}
                                                 display={"flex"}
                                                 alignItems={"center"}
@@ -397,8 +426,8 @@ const CompanyProfilePage = () => {
                                                 flexDirection={"column"}
                                                 gap={"25px"}
                                             >
-                                                {companyData.Orders.map((order) =>
-                                                    order.CompanyReviews.map((review) => (
+                                                {companyData.Events.map((event) =>
+                                                    event.CompanyReviews.map((review) => (
                                                         <CompanyReview key={review.id} companyReview={review} />
                                                     ))
                                                 )}
@@ -406,7 +435,7 @@ const CompanyProfilePage = () => {
                                         </>
                                     ) : (
                                         <Typography
-                                            variant="h2"
+                                            variant="h4"
                                             height={"69px"}
                                             display={"flex"}
                                             alignItems={"center"}
