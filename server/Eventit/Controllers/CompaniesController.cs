@@ -150,6 +150,7 @@ namespace Eventit.Controllers
             var company = await _context.Companies
                 .Include(c => c.Events)
                     .ThenInclude(e => e.EventReviews)
+                    .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (company is null)

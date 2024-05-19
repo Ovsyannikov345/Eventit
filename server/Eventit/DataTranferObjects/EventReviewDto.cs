@@ -1,4 +1,6 @@
-﻿namespace Server.DataTranferObjects
+﻿using Eventit.DataTranferObjects;
+
+namespace Server.DataTranferObjects
 {
     public class EventReviewDto
     {
@@ -7,5 +9,7 @@
         public string Description { get; set; } = null!;
 
         public int Grade { get; set; }
+
+        public UserDto User {get; set; } = null!;
     }
 }
