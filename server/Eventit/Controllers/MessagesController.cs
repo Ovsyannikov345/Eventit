@@ -50,8 +50,10 @@ namespace Eventit.Controllers
 
                 message.UserId = userId;
             }
-
-            message.CompanyId = companyId;
+            else 
+            {
+                message.CompanyId = companyId;
+            }
 
             _context.Messages.Add(message);
             await _context.SaveChangesAsync();
