@@ -14,6 +14,7 @@ import UserEditForm from "../../components/forms/UserEditForm";
 import addNoun from "../../utils/fieldsParser";
 import moment from "moment";
 import { useParams } from "react-router-dom";
+import UserEvent from "../../components/UserEvent";
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -100,7 +101,7 @@ const UserProfilePage = () => {
             count++;
         });
         return count;
-        
+
     }, [userData]);
 
     // TODO implement.
@@ -344,8 +345,9 @@ const UserProfilePage = () => {
                                         }}
                                     />
                                 </Grid>
-                                </Grid>   
-                            {userData.Reports !== undefined ? (
+                            </Grid>  
+                                 
+                            {id !== undefined ? (
                                 <Grid
                                     container
                                     item
@@ -355,7 +357,7 @@ const UserProfilePage = () => {
                                         paddingLeft: { xs: "5px", md: 0 },
                                     }}
                                 >
-                                    {userData.Reports.filter((report) => report.UserReview != null).length > 0 ? (
+                                    {userData.events.length >  0 ? (
                                         <>
                                             <Typography
                                                 variant="h2"
@@ -363,7 +365,7 @@ const UserProfilePage = () => {
                                                 display={"flex"}
                                                 alignItems={"center"}
                                             >
-                                                Отзывы
+                                                Посещённые мероприятия
                                             </Typography>
 
                                             <Grid
@@ -373,14 +375,11 @@ const UserProfilePage = () => {
                                                 flexDirection={"column"}
                                                 gap={"25px"}
                                             >
-                                                {/* {userData.Reports.filter(
-                                                    (report) => report.UserReview != null
-                                                ).map((report) => (
-                                                    <UserReview
-                                                        key={report.UserReview.id}
-                                                        userReview={report.UserReview}
-                                                    />
-                                                ))} */}
+
+                                            {userData.events.map((event) => (
+                                                <UserEvent key={event.id} event={event} />
+                                            ))}
+
                                             </Grid>
                                         </>
                                     ) : (
@@ -390,7 +389,7 @@ const UserProfilePage = () => {
                                             display={"flex"}
                                             alignItems={"center"}
                                         >
-                                            Отзывов пока нет
+                                            Мероприятий пока нет
                                         </Typography>
                                     )}
                                 </Grid>
