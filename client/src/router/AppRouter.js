@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { publicRoutes } from "./publicRoutes";
 import { userRoutes } from "./userRoutes";
 import { companyRoutes } from "./companyRoutes";
-import { LOGIN_ROUTE, COMPANY_DEFAULT_ROUTE, USER_DEFAULT_ROUTE, EVENT_CREATION_ROUTE, COMPANY_PROFILE_ROUTE, USER_PROFILE_ROUTE } from "../utils/consts";
+import { LOGIN_ROUTE, COMPANY_DEFAULT_ROUTE, USER_DEFAULT_ROUTE, EVENT_CREATION_ROUTE, COMPANY_PROFILE_ROUTE, USER_PROFILE_ROUTE, EVENTS_ROUTE, COMPANY_EVENTS_ROUTE } from "../utils/consts";
 
 const AppRouter = () => {
     const [token, setToken] = useState(localStorage.getItem("accessToken"));
@@ -26,7 +26,7 @@ const AppRouter = () => {
                 {userRoutes.map(({ path, Component }) => (
                     <Route key={path} path={path} element={<Component />} exact />
                 ))}
-                <Route key="*" path="*" element={<Navigate to={USER_PROFILE_ROUTE} />} />
+                <Route key="*" path="*" element={<Navigate to={EVENTS_ROUTE} />} />
             </Routes>
         );
     }
@@ -39,7 +39,7 @@ const AppRouter = () => {
                 {companyRoutes.map(({ path, Component }) => (
                     <Route key={path} path={path} element={<Component />} exact />
                 ))}
-                <Route key="*" path="*" element={<Navigate to={COMPANY_PROFILE_ROUTE} />} />
+                <Route key="*" path="*" element={<Navigate to={COMPANY_EVENTS_ROUTE} />} />
             </Routes>
         );
     }
