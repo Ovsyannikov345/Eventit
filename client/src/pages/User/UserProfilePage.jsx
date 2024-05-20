@@ -359,14 +359,14 @@ const UserProfilePage = () => {
                                                 flexDirection={"column"}
                                                 gap={"25px"}
                                             >
-                                                {userData.Reports.filter(
+                                                {/* {userData.Reports.filter(
                                                     (report) => report.UserReview != null
                                                 ).map((report) => (
                                                     <UserReview
                                                         key={report.UserReview.id}
                                                         userReview={report.UserReview}
                                                     />
-                                                ))}
+                                                ))} */}
                                             </Grid>
                                         </>
                                     ) : (
