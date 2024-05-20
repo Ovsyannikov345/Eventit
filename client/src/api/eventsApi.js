@@ -109,7 +109,7 @@ const getEventParticipants = async (eventId) => {
     } catch (error) {
         if (error.response) {
             if (error.response.status === 401) {
-                return await updateToken(getEventChat, eventId);
+                return await updateToken(getEventParticipants, eventId);
             }
 
             return error.response;
@@ -149,7 +149,27 @@ const leaveEvent = async (id) => {
     } catch (error) {
         if (error.response) {
             if (error.response.status === 401) {
-                return await updateToken(joinEvent, id);
+                return await updateToken(leaveEvent, id);
+            }
+
+            return error.response;
+        } else if (error.request) {
+            return { data: { error: "Сервис временно недоступен" } };
+        } else {
+            return { data: { error: "Ошибка при создании запроса" } };
+        }
+    }
+};
+
+const finishEvent = async (id) => {
+    try {
+        const response = await host.post(`/Events/${id}/finish`);
+
+        return response;
+    } catch (error) {
+        if (error.response) {
+            if (error.response.status === 401) {
+                return await updateToken(finishEvent, id);
             }
 
             return error.response;
@@ -170,4 +190,5 @@ export {
     getEventParticipants,
     joinEvent,
     leaveEvent,
+    finishEvent,
 };
