@@ -4,7 +4,7 @@ import CalendarIcon from "@mui/icons-material/CalendarTodayOutlined";
 import ListIcon from "@mui/icons-material/ListAltOutlined";
 import StarIcon from "@mui/icons-material/StarOutlineOutlined";
 
-const ProfileCards = ({ registrationDate, eventCount, rating }) => {
+const ProfileCards = ({ registrationDate, eventsCount, rating }) => {
   return (
     <Grid
       container
@@ -22,14 +22,14 @@ const ProfileCards = ({ registrationDate, eventCount, rating }) => {
           </Grid>
         </Grid>
       )}
-      {eventCount && (
+      {eventsCount && (
         <Grid container item width={"194px"} gap={"15px"}>
           <ListIcon sx={{ fontSize: 50 }} />
           <Grid>
             <Typography variant="h6" height={"23px"} display={"flex"} alignItems={"center"}>
               Мероприятий
             </Typography>
-            <Typography variant="h5">{eventCount}</Typography>
+            <Typography variant="h5">{eventsCount}</Typography>
           </Grid>
         </Grid>
       )}

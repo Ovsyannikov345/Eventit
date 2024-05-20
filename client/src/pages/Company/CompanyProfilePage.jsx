@@ -282,7 +282,7 @@ const CompanyProfilePage = () => {
                                     }
                                     //TODO delete or complete
                                     eventsCount={
-                                        companyData.Events !== undefined ? companyData.Events.length : "-"
+                                        companyData.eventsCount
                                     }
                                     rating={rating}
                                 />
