@@ -70,7 +70,7 @@ const CompanyEventsPage = () => {
                 (!startDate || moment(event.startDate, "YYYY-MM-DD").isSameOrAfter(startDate)) &&
                 (!endDate || moment(event.startDate, "YYYY-MM-DD").isSameOrBefore(endDate)) &&
                 (searchQuery.showPast || moment(event.startDate).isSameOrAfter(new Date())) &&
-                (searchQuery.showFinished || !event.finished)
+                (searchQuery.showFinished || !event.isFinished)
         );
     }, [searchQuery, sortedEvents]);
 

@@ -7,6 +7,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import { useNavigate, useParams } from "react-router-dom";
 import { finishEvent, getEvent, getEventParticipants } from "../../api/eventsApi";
 import { getCompanyReviews } from "../../api/companiesApi";
+import { postPlaceReview } from "../../api/placeReviewsApi";
 import moment from "moment";
 import CompanyHeader from "../../components/headers/СompanyHeader";
 import NavigateBack from "./../../components/NavigateBack";
@@ -17,6 +18,7 @@ import HideDetailsButton from "./../../components/buttons/HideDetailsButton";
 import ParticipantsModal from "../../components/modals/ParticipantsModal/ParticipantsModal";
 import Chat from "../../components/Chat/Chat";
 import ConfirmationModal from "../../components/modals/ConfirmationModal";
+import PlaceReviewModal from "../../components/modals/PlaceReviewModal";
 
 const CompanyEventDetailsPage = () => {
     const { id } = useParams();
@@ -50,9 +52,11 @@ const CompanyEventDetailsPage = () => {
     const [event, setEvent] = useState(null);
     const [companyReviews, setCompanyReviews] = useState(null);
     const [participants, setParticipants] = useState(null);
+    const [isPlaceGraded, setIsPlaceGraded] = useState(true);
 
     const [isParticipantsModalOpen, setIsParticipantsModalOpen] = useState(false);
     const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+    const [isPlaceReviewModalOpen, setIsPlaceReviewModalOpen] = useState(true);
 
     const [showDetails, setShowDetails] = useState(false);
 
@@ -69,6 +73,11 @@ const CompanyEventDetailsPage = () => {
 
             companyId = response.data.company.id;
             setEvent(response.data);
+            setIsPlaceGraded(
+                response.data.place?.placeReviews
+                    ? response.data.place.placeReviews.some((r) => r.eventId === Number.parseInt(id) && r.companyId === Number.parseInt(localStorage.getItem("id")))
+                    : false
+            );
         };
 
         const loadCompanyReviews = async () => {
@@ -137,16 +146,6 @@ const CompanyEventDetailsPage = () => {
     }, [companyReviews]);
 
     const isOwner = useMemo(() => {
-        console.log(event);
-        console.log(localStorage.getItem("role") === "company");
-        console.log(event?.companyId);
-        console.log(Number.parseInt(localStorage.getItem("id")));
-
-        console.log(
-            localStorage.getItem("role") === "company" &&
-                event?.companyId === Number.parseInt(localStorage.getItem("id"))
-        );
-
         return (
             localStorage.getItem("role") === "company" &&
             event?.company.id === Number.parseInt(localStorage.getItem("id"))
@@ -167,6 +166,28 @@ const CompanyEventDetailsPage = () => {
         displaySuccess("Меропритие завершено");
     };
 
+    const sendPlaceReview = async (grade) => {
+        if (!event.place) {
+            displayError("Мероприятие не имеет места");
+            return;
+        }
+
+        const response = await postPlaceReview({
+            grade: grade,
+            placeId: event.place.id,
+            eventId: event.id,
+        });
+
+        if (!response.status || response.status >= 300) {
+            displayError(response.data.error);
+            setIsPlaceReviewModalOpen(false);
+            return;
+        }
+
+        setIsPlaceReviewModalOpen(false);
+        displaySuccess("Оценка отправлена");
+    };
+
     return (
         <>
             <ParticipantsModal
@@ -179,6 +200,11 @@ const CompanyEventDetailsPage = () => {
                 message={"Завершить мероприятие?"}
                 acceptHandler={() => finish(event.id)}
                 declineHandler={() => setIsConfirmationModalOpen(false)}
+            />
+            <PlaceReviewModal
+                isOpen={event?.isFinished && !isPlaceGraded && isPlaceReviewModalOpen}
+                onClose={() => setIsPlaceReviewModalOpen(false)}
+                acceptHandler={sendPlaceReview}
             />
             <Grid
                 container
