@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { finishEvent, getEvent, getEventParticipants } from "../../api/eventsApi";
 import { getCompanyReviews } from "../../api/companiesApi";
 import moment from "moment";
-import UserHeader from "./../../components/headers/UserHeader";
+import CompanyHeader from "../../components/headers/СompanyHeader";
 import NavigateBack from "./../../components/NavigateBack";
 import EventImage from "../../img/eventTempImage.png";
 import addNoun from "./../../utils/fieldsParser";
@@ -190,7 +190,7 @@ const CompanyEventDetailsPage = () => {
                 style={{ backgroundImage: "linear-gradient(#204276, #729CDB)" }}
                 pb={"20px"}
             >
-                <UserHeader />
+                <CompanyHeader />
                 <Grid
                     container
                     item

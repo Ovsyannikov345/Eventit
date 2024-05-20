@@ -62,7 +62,8 @@ const UserSearchEventsPage = () => {
         return sortedEvents.filter(
             (event) =>
                 event.title.toLowerCase().includes(searchQuery.name.toLowerCase()) &&
-                event.place.name.toLowerCase().includes(searchQuery.place.toLowerCase()) &&
+                ((!searchQuery.place && !event.place) ||
+                    event.place?.name.toLowerCase().includes(searchQuery.place.toLowerCase())) &&
                 (!searchQuery.minAge || (event.ageRestriction ?? 0) <= searchQuery.minAge) &&
                 (!searchQuery.minPrice || (event.entranceFee ?? 0) >= searchQuery.minPrice) &&
                 (!searchQuery.maxPrice || (event.entranceFee ?? 0) <= searchQuery.maxPrice) &&
