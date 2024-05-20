@@ -273,7 +273,7 @@ const UserProfilePage = () => {
                                 <ProfileCards
                                     registrationDate={
                                         userData.registrationDate !== undefined
-                                            ? moment.utc(userData.createdAt).format("DD-MM-YYYY")
+                                            ? moment.utc(userData.registrationDate).format("DD-MM-YYYY")
                                             : "-"
                                     }
                                     //TODO delete or complete

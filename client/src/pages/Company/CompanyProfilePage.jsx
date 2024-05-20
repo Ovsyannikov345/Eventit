@@ -39,7 +39,7 @@ const CompanyProfilePage = () => {
 
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [companyReviews, setCompanyReviews] = useState(null);
+    const [companyReviews, setCompanyReviews] = useState();
 
     // TODO implement.
     useEffect(() => {
@@ -277,7 +277,7 @@ const CompanyProfilePage = () => {
                                 <ProfileCards
                                     registrationDate={
                                         companyData.registrationDate !== undefined
-                                            ? moment.utc(companyData.createdAt).format("DD-MM-YYYY")
+                                            ? moment.utc(companyData.registrationDate).format("DD-MM-YYYY")
                                             : "-"
                                     }
                                     //TODO delete or complete
@@ -386,7 +386,7 @@ const CompanyProfilePage = () => {
                             ) : (
                                 <></>
                             )}
-                            {companyData.Events !== undefined ? (
+                            {companyReviews !== undefined ? (
                                 <Grid
                                     container
                                     item
@@ -396,7 +396,7 @@ const CompanyProfilePage = () => {
                                         paddingLeft: { xs: "5px", md: 0 },
                                     }}
                                 >
-                                    {companyData.Events.map((event) => event.CompanyReviews).length > 0 ? (
+                                    {companyReviews.length > 0 ? (
                                         <>
                                             <Typography
                                                 variant="h4"
@@ -414,11 +414,10 @@ const CompanyProfilePage = () => {
                                                 flexDirection={"column"}
                                                 gap={"25px"}
                                             >
-                                                {companyData.Events.map((event) =>
-                                                    event.CompanyReviews.map((review) => (
-                                                        <CompanyReview key={review.id} companyReview={review} />
-                                                    ))
-                                                )}
+                                                
+                                                {companyReviews.map((review) => (
+                                                <CompanyReview key={review.id} companyReview={review} />
+                                            ))}
                                             </Grid>
                                         </>
                                     ) : (
