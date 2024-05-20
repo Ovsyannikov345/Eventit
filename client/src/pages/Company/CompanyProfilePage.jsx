@@ -41,7 +41,6 @@ const CompanyProfilePage = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [companyReviews, setCompanyReviews] = useState();
 
-    // TODO implement.
     useEffect(() => {
         var companyId;
 
@@ -107,34 +106,17 @@ const CompanyProfilePage = () => {
         setError(false);
     };
 
-    // TODO implement.
     const applyChanges = async (updatedCompanyData) => {
-        console.log("Updated Company Data:", updatedCompanyData);
         const response = await putCompany(updatedCompanyData);
 
-        if (!response) {
-            displayError("Сервис временно недоступен");
+        if (!response.status || response.status >= 300) {
+            displayError(response.data.error);
             return;
         }
 
-        if (response.status === 204) {
-            setCompanyData(response.data);
-            setEditMode(false);
-            window.location.reload();
-          }
-
-        if (response.status === 401) {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("role");
-            localStorage.removeItem("refreshToken");
-            localStorage.removeItem("token");
-            window.location.reload();
-        }
-
-        if (response.status >= 300) {
-            displayError("Ошибка при изменении данных. Код: " + response.status);
-            return;
-        }
+        setCompanyData(response.data);
+        setEditMode(false);
+        window.location.reload();
 
         //     const imageSuccess = await sendImage();
 
@@ -208,9 +190,8 @@ const CompanyProfilePage = () => {
                     }}
                 >
                     <NavigateBack
-                        // TODO complete this part
                         label={id === undefined ? "Главная" : "Назад"}
-                        to={id === undefined ? "/my-orders" : -1}
+                        to={id === undefined ? "/my-events" : -1}
                     />
                     {!readonly && !editMode && companyData.id !== undefined && (
                         <IconButton style={{ padding: 0, color: "#000000" }} onClick={() => setEditMode(true)}>
@@ -249,11 +230,7 @@ const CompanyProfilePage = () => {
                                 gap={"10px"}
                                 sx={{ maxWidth: { xs: "253px", md: "430px" } }}
                             >
-                                <Typography
-                                    variant="h4"
-                                    height={"40px"}
-                                    
-                                >
+                                <Typography variant="h4" height={"40px"}>
                                     {companyData.name}
                                 </Typography>
                                 <Typography variant="h6">{companyData.email}</Typography>
@@ -269,25 +246,20 @@ const CompanyProfilePage = () => {
                                 />
                             </Button>
                         )}
-                    </Grid>            
+                    </Grid>
                     {!editMode ? (
                         <>
                             {
-                                // TODO implement.
                                 <ProfileCards
                                     registrationDate={
                                         companyData.registrationDate !== undefined
                                             ? moment.utc(companyData.registrationDate).format("DD-MM-YYYY")
                                             : "-"
                                     }
-                                    //TODO delete or complete
-                                    eventsCount={
-                                        companyData.eventsCount
-                                    }
+                                    eventsCount={companyData.eventsCount}
                                     rating={rating}
                                 />
                             }
-
                             {companyData.companyContactPerson !== undefined ? (
                                 <Grid
                                     container
@@ -298,25 +270,25 @@ const CompanyProfilePage = () => {
                                         marginTop: { xs: "10px", md: "50px" },
                                     }}
                                 >
-                                        <TextField
-                                            variant="standard"
-                                            label="Регистарционный номер"
-                                            value={companyData.registrationNumber}
-                                            InputProps={{
-                                                readOnly: true,
-                                                sx: { fontSize: { xs: "20px", md: "24px" } },
-                                            }}
-                                            sx={{
-                                                maxWidth:"394px",
-                                                marginBottom:"3vh",
-                                                "& .MuiInput-underline:before": {
-                                                    borderBottomColor: theme.palette.primary.main,
-                                                },
-                                                "& .MuiInput-underline:after": {
-                                                    borderBottomColor: theme.palette.primary.main,
-                                                },
-                                            }}
-                                        />
+                                    <TextField
+                                        variant="standard"
+                                        label="Регистарционный номер"
+                                        value={companyData.registrationNumber}
+                                        InputProps={{
+                                            readOnly: true,
+                                            sx: { fontSize: { xs: "20px", md: "24px" } },
+                                        }}
+                                        sx={{
+                                            maxWidth: "394px",
+                                            marginBottom: "3vh",
+                                            "& .MuiInput-underline:before": {
+                                                borderBottomColor: theme.palette.primary.main,
+                                            },
+                                            "& .MuiInput-underline:after": {
+                                                borderBottomColor: theme.palette.primary.main,
+                                            },
+                                        }}
+                                    />
                                     <Typography
                                         variant="h5"
                                         height={"69px"}
@@ -414,10 +386,9 @@ const CompanyProfilePage = () => {
                                                 flexDirection={"column"}
                                                 gap={"25px"}
                                             >
-                                                
                                                 {companyReviews.map((review) => (
-                                                <CompanyReview key={review.id} companyReview={review} />
-                                            ))}
+                                                    <CompanyReview key={review.id} companyReview={review} />
+                                                ))}
                                             </Grid>
                                         </>
                                     ) : (

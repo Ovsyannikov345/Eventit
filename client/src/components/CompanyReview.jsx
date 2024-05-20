@@ -13,7 +13,7 @@ const CompanyReview = ({ companyReview }) => {
             gap={"8px"}
             style={{ border: "2px solid #729CDB", borderRadius: "10px" }}
         >
-            <Button style={{ padding: 0 }} onClick={() => navigate(`/user/${companyReview.User.id}`)}>
+            <Button style={{ padding: 0 }} onClick={() => navigate(`/user/${companyReview.user.id}`)}>
                 <Avatar
                     //src={
                     //    companyReview.User.id !== undefined
@@ -32,7 +32,12 @@ const CompanyReview = ({ companyReview }) => {
                 flexGrow={1}
                 sx={{ flexDirection: { xs: "column", md: "row" } }}
             >
-                <Typography variant="h4" height={"35px"} style={{ borderBottom: "2px solid #729CDB" }} sx={{ fontSize: { xs: "20px", md: "24px" } }}>
+                <Typography
+                    variant="h4"
+                    height={"35px"}
+                    style={{ borderBottom: "2px solid #729CDB" }}
+                    sx={{ fontSize: { xs: "20px", md: "24px" } }}
+                >
                     {companyReview.user.lastName + " " + companyReview.user.firstName}
                 </Typography>
                 <Rating name="read-only" value={companyReview.grade} readOnly />

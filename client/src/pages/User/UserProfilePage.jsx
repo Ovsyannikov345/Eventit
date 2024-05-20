@@ -1,15 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTheme } from "@emotion/react";
-import {
-    Avatar,
-    Grid,
-    IconButton,
-    TextField,
-    Typography,
-    Alert,
-    Snackbar,
-    Button,
-} from "@mui/material";
+import { Avatar, Grid, IconButton, TextField, Typography, Alert, Snackbar, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import UserHeader from "../../components/headers/UserHeader";
@@ -52,36 +43,16 @@ const UserProfilePage = () => {
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-    // TODO implement.
     useEffect(() => {
         const loadData = async () => {
-            const response =
-                id !== undefined ? await getUser(id) : await getUserProfile();
+            const response = id !== undefined ? await getUser(id) : await getUserProfile();
 
-            if (!response) {
-                displayError("Сервис временно недоступен");
-                return;
-            }
-
-            if (response.status === 401) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("role");
-                localStorage.removeItem("refreshToken");
-                localStorage.removeItem("token");
-                window.location.reload();
-            }
-
-            if (response.status >= 300) {
-                displayError(
-                    "Ошибка при загрузке профиля. Код: " + response.status
-                );
-                console.log(response);
+            if (!response.status || response.status >= 300) {
+                displayError(response.data.error);
                 return;
             }
 
             setUserData(response.data);
-
-            console.log(response.data);
             setReadonly(id !== undefined);
         };
 
@@ -116,36 +87,17 @@ const UserProfilePage = () => {
         return count;
     }, [userData]);
 
-    // TODO implement.
     const applyChanges = async (updatedUserData) => {
-        console.log("Updated User Data:", updatedUserData);
         const response = await putUser(updatedUserData);
 
-        if (!response) {
-            displayError("Сервис временно недоступен");
+        if (!response.status || response.status >= 300) {
+            displayError(response.data.error);
             return;
         }
 
-        if (response.status === 204) {
-            setUserData(response.data);
-            setEditMode(false);
-            window.location.reload();
-        }
-
-        if (response.status === 401) {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("role");
-            localStorage.removeItem("refreshToken");
-            localStorage.removeItem("token");
-            window.location.reload();
-        }
-
-        if (response.status >= 300) {
-            displayError(
-                "Ошибка при изменении данных. Код: " + response.status
-            );
-            return;
-        }
+        setUserData(response.data);
+        setEditMode(false);
+        window.location.reload();
 
         //     const imageSuccess = await sendImage();
 
@@ -196,11 +148,7 @@ const UserProfilePage = () => {
             alignItems={"center"}
             style={{ backgroundImage: "linear-gradient(#204276, #729CDB)" }}
         >
-            {localStorage.getItem("role") === "company" ? (
-                <CompanyHeader />
-            ) : (
-                <UserHeader />
-            )}
+            {localStorage.getItem("role") === "company" ? <CompanyHeader /> : <UserHeader />}
             <Grid
                 container
                 item
@@ -229,13 +177,8 @@ const UserProfilePage = () => {
                         to={id === undefined ? "/orders" : -1}
                     />
                     {!readonly && !editMode && userData.id !== undefined && (
-                        <IconButton
-                            style={{ padding: 0, color: "#000000" }}
-                            onClick={() => setEditMode(true)}
-                        >
-                            <EditIcon
-                                sx={{ fontSize: { xs: 30, md: 40, lg: 30 } }}
-                            ></EditIcon>
+                        <IconButton style={{ padding: 0, color: "#000000" }} onClick={() => setEditMode(true)}>
+                            <EditIcon sx={{ fontSize: { xs: 30, md: 40, lg: 30 } }}></EditIcon>
                         </IconButton>
                     )}
                 </Grid>
@@ -263,9 +206,7 @@ const UserProfilePage = () => {
                                 userData.id !== undefined
                                     ? `http://localhost:5000/api/users/${
                                           userData.id
-                                      }/avatar?jwt=${localStorage.getItem(
-                                          "jwt"
-                                      )}`
+                                      }/avatar?jwt=${localStorage.getItem("jwt")}`
                                     : ""
                             }
                             variant="square"
@@ -292,21 +233,15 @@ const UserProfilePage = () => {
                                         fontSize: { xs: "20px", md: "24px" },
                                     }}
                                 >
-                                    {[
-                                        userData.lastName,
-                                        userData.firstName,
-                                        userData.patronymic,
-                                    ].join(" ")}
+                                    {[userData.lastName, userData.firstName, userData.patronymic].join(" ")}
                                 </Typography>
                                 <Typography variant="h6" height={"26px"}>
                                     {userData.dateOfBirth
-                                        ? addNoun(
-                                              moment().diff(
-                                                  moment(userData.dateOfBirth),
-                                                  "years"
-                                              ),
-                                              ["год", "года", "лет"]
-                                          )
+                                        ? addNoun(moment().diff(moment(userData.dateOfBirth), "years"), [
+                                              "год",
+                                              "года",
+                                              "лет",
+                                          ])
                                         : ""}
                                 </Typography>
                                 <Typography
@@ -320,15 +255,11 @@ const UserProfilePage = () => {
                             </Grid>
                         ) : (
                             <Button component="label" variant="outlined">
-                                {image !== undefined
-                                    ? image.name
-                                    : "ВЫБРАТЬ ФАЙЛ"}
+                                {image !== undefined ? image.name : "ВЫБРАТЬ ФАЙЛ"}
                                 <VisuallyHiddenInput
                                     type="file"
                                     name="avatar"
-                                    onChange={(e) =>
-                                        setImage(e.target.files[0])
-                                    }
+                                    onChange={(e) => setImage(e.target.files[0])}
                                     accept="image/png"
                                 />
                             </Button>
@@ -341,17 +272,11 @@ const UserProfilePage = () => {
                                 <ProfileCards
                                     registrationDate={
                                         userData.registrationDate !== undefined
-                                            ? moment
-                                                  .utc(
-                                                      userData.registrationDate
-                                                  )
-                                                  .format("DD-MM-YYYY")
+                                            ? moment.utc(userData.registrationDate).format("DD-MM-YYYY")
                                             : "-"
                                     }
                                     //TODO delete or complete
-                                    eventsCount={
-                                        eventsCount ? eventsCount : "-"
-                                    }
+                                    eventsCount={eventsCount ? eventsCount : "-"}
                                     rating={rating}
                                 />
                             }
@@ -368,21 +293,10 @@ const UserProfilePage = () => {
                                     marginTop: { xs: "10px", md: "50px" },
                                 }}
                             >
-                                <Typography
-                                    variant="h5"
-                                    height={"69px"}
-                                    display={"flex"}
-                                    alignItems={"center"}
-                                >
+                                <Typography variant="h5" height={"69px"} display={"flex"} alignItems={"center"}>
                                     Контактная информация
                                 </Typography>
-                                <Grid
-                                    container
-                                    item
-                                    flexDirection={"column"}
-                                    gap={"25px"}
-                                    maxWidth={"394px"}
-                                >
+                                <Grid container item flexDirection={"column"} gap={"25px"} maxWidth={"394px"}>
                                     <TextField
                                         variant="standard"
                                         label="Эл. почта"
@@ -398,12 +312,10 @@ const UserProfilePage = () => {
                                         }}
                                         sx={{
                                             "& .MuiInput-underline:before": {
-                                                borderBottomColor:
-                                                    theme.palette.primary.main,
+                                                borderBottomColor: theme.palette.primary.main,
                                             },
                                             "& .MuiInput-underline:after": {
-                                                borderBottomColor:
-                                                    theme.palette.primary.main,
+                                                borderBottomColor: theme.palette.primary.main,
                                             },
                                         }}
                                     />
@@ -422,12 +334,10 @@ const UserProfilePage = () => {
                                         }}
                                         sx={{
                                             "& .MuiInput-underline:before": {
-                                                borderBottomColor:
-                                                    theme.palette.primary.main,
+                                                borderBottomColor: theme.palette.primary.main,
                                             },
                                             "& .MuiInput-underline:after": {
-                                                borderBottomColor:
-                                                    theme.palette.primary.main,
+                                                borderBottomColor: theme.palette.primary.main,
                                             },
                                         }}
                                     />
@@ -443,7 +353,7 @@ const UserProfilePage = () => {
                                         paddingLeft: { xs: "5px", md: 0 },
                                     }}
                                 >
-                                    {userData && userData.events.length > 0 ? (
+                                    {userData && userData.events?.length > 0 ? (
                                         <>
                                             <Typography
                                                 variant="h5"
@@ -456,10 +366,7 @@ const UserProfilePage = () => {
 
                                             {/* TODO put in conteyner */}
                                             {userData.events.map((event) => (
-                                                <UserEvent
-                                                    key={event.id}
-                                                    event={event}
-                                                />
+                                                <UserEvent key={event.id} event={event} />
                                             ))}
                                         </>
                                     ) : (
@@ -486,16 +393,8 @@ const UserProfilePage = () => {
                     )}
                 </Grid>
             </Grid>
-            <Snackbar
-                open={error}
-                autoHideDuration={6000}
-                onClose={closeSnackbar}
-            >
-                <Alert
-                    onClose={closeSnackbar}
-                    severity="error"
-                    sx={{ width: "100%" }}
-                >
+            <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
+                <Alert onClose={closeSnackbar} severity="error" sx={{ width: "100%" }}>
                     {errorMessage}
                 </Alert>
             </Snackbar>
