@@ -342,6 +342,11 @@ namespace Eventit.Controllers
                 return NotFound();
             }
 
+            if (@event.CompanyId != companyId)
+            {
+                return Forbid("Вы не можете завершить чужой заказ");
+            }
+
             if (@event.IsFinished)
             {
                 return BadRequest("Event is already finished");
