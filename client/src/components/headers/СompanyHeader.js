@@ -9,6 +9,8 @@ import SupportIcon from "@mui/icons-material/Support";
 import LogoutIcon from "@mui/icons-material/Logout";
 import styled from "styled-components";
 import SupportRequestModal from "../modals/SupportRequestModal";
+import { useNavigate } from "react-router-dom";
+import { COMPANY_EVENTS_ROUTE, COMPANY_PROFILE_ROUTE, EVENT_CREATION_ROUTE } from "../../utils/consts";
 
 const LogoContainer = styled.div`
     width: 120px;
@@ -46,6 +48,8 @@ const handleLogout = () => {
 };
 
 const CompanyHeader = () => {
+    const navigate = useNavigate();
+
     const [supportRequestModalOpen, setSupportRequestModalOpen] = useState(false);
 
     const [error, setError] = useState(false);
@@ -87,19 +91,19 @@ const CompanyHeader = () => {
                     </LogoContainer>
                     <Navigation>
                         <Grid container gap={"10px"} ml={"20px"}>
-                            {/* TODO implement */}
                             <Button
                                 color="inherit"
                                 startIcon={<CreateIcon />}
                                 sx={{ borderBottom: "1px solid #555", borderRadius: "0px" }}
+                                onClick={() => navigate(EVENT_CREATION_ROUTE)}
                             >
                                 Создать мероприятие
                             </Button>
-                            {/* TODO implement */}
                             <Button
                                 color="inherit"
                                 startIcon={<EventIcon />}
                                 sx={{ borderBottom: "1px solid #555", borderRadius: "0px" }}
+                                onClick={() => navigate(COMPANY_EVENTS_ROUTE)}
                             >
                                 Ваши мероприятия
                             </Button>
@@ -110,8 +114,12 @@ const CompanyHeader = () => {
                         <IconButton color="inherit" title="Уведомления" sx={{ fontSize: "30px" }}>
                             <NotificationsIcon fontSize="20px" />
                         </IconButton>
-                        {/* TODO implement */}
-                        <IconButton color="inherit" title="Профиль" sx={{ fontSize: "30px" }}>
+                        <IconButton
+                            color="inherit"
+                            title="Профиль"
+                            sx={{ fontSize: "30px" }}
+                            onClick={() => navigate(COMPANY_PROFILE_ROUTE)}
+                        >
                             <AccountCircleIcon fontSize="20px" />
                         </IconButton>
                         <IconButton

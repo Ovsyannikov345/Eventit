@@ -41,38 +41,37 @@ const UserProfilePage = () => {
 
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const age = moment().diff(moment(userData.dateOfBirth), 'years');
 
     // TODO implement.
-     useEffect(() => {
-         const loadData = async () => {
-             const response = id !== undefined ? await getUser(id) : await getUserProfile();
+    useEffect(() => {
+        const loadData = async () => {
+            const response = id !== undefined ? await getUser(id) : await getUserProfile();
 
-             if (!response) {
-                 displayError("Сервис временно недоступен");
-                 return;
-             }
+            if (!response) {
+                displayError("Сервис временно недоступен");
+                return;
+            }
 
-             if (response.status === 401) {
+            if (response.status === 401) {
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("role");
                 localStorage.removeItem("refreshToken");
                 localStorage.removeItem("token");
                 window.location.reload();
-             }
+            }
 
-             if (response.status >= 300) {
-                 displayError("Ошибка при загрузке профиля. Код: " + response.status);
-                 console.log(response);
-                 return;
-             }
+            if (response.status >= 300) {
+                displayError("Ошибка при загрузке профиля. Код: " + response.status);
+                console.log(response);
+                return;
+            }
 
-             setUserData(response.data);
-             setReadonly(id !== undefined);
-         };
+            setUserData(response.data);
+            setReadonly(id !== undefined);
+        };
 
-         loadData();
-     }, [id]);
+        loadData();
+    }, [id]);
 
     const rating = null;
 
@@ -90,43 +89,42 @@ const UserProfilePage = () => {
     };
 
     // TODO implement.
-     const applyChanges = async (updatedUserData) => {
-
+    const applyChanges = async (updatedUserData) => {
         console.log("Updated User Data:", updatedUserData);
-         const response = await putUser(updatedUserData);
+        const response = await putUser(updatedUserData);
 
-         if (!response) {
-             displayError("Сервис временно недоступен");
-             return;
-         }
+        if (!response) {
+            displayError("Сервис временно недоступен");
+            return;
+        }
 
-         if (response.status === 204) {
+        if (response.status === 204) {
             setUserData(response.data);
             setEditMode(false);
             window.location.reload();
         }
 
-         if (response.status === 401) {
+        if (response.status === 401) {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("role");
             localStorage.removeItem("refreshToken");
             localStorage.removeItem("token");
-             window.location.reload();
-         }
+            window.location.reload();
+        }
 
-         if (response.status >= 300) {
-             displayError("Ошибка при изменении данных. Код: " + response.status);
-             return;
-         }
+        if (response.status >= 300) {
+            displayError("Ошибка при изменении данных. Код: " + response.status);
+            return;
+        }
 
-    //     const imageSuccess = await sendImage();
+        //     const imageSuccess = await sendImage();
 
-    //     if (imageSuccess) {
-    //         setUserData(response.data);
-    //         setEditMode(false);
-    //         window.location.reload();
-    //     }
-     };
+        //     if (imageSuccess) {
+        //         setUserData(response.data);
+        //         setEditMode(false);
+        //         window.location.reload();
+        //     }
+    };
 
     // TODO implement.
     // const sendImage = async () => {
@@ -192,7 +190,7 @@ const UserProfilePage = () => {
                     }}
                 >
                     <NavigateBack
-                    // TODO complete this part
+                        // TODO complete this part
                         label={id === undefined ? "Главная" : "Назад"}
                         to={id === undefined ? "/orders" : -1}
                     />
@@ -247,9 +245,13 @@ const UserProfilePage = () => {
                                     {[userData.lastName, userData.firstName, userData.patronymic].join(" ")}
                                 </Typography>
                                 <Typography variant="h6" height={"26px"}>
-                                    {(age != null
-                                            ? addNoun(age, ["год", "года", "лет"])
-                                            : "")}
+                                    {userData.dateOfBirth
+                                        ? addNoun(moment().diff(moment(userData.dateOfBirth), "years"), [
+                                              "год",
+                                              "года",
+                                              "лет",
+                                          ])
+                                        : ""}
                                 </Typography>
                                 <Typography variant="h6" sx={{ maxWidth: { xs: "253px", md: "641px" } }}>
                                     {userData.description}
@@ -269,7 +271,8 @@ const UserProfilePage = () => {
                     </Grid>
                     {!editMode ? (
                         <>
-                            { // TODO implement.
+                            {
+                                // TODO implement.
                                 <ProfileCards
                                     registrationDate={
                                         userData.registrationDate !== undefined
@@ -277,11 +280,10 @@ const UserProfilePage = () => {
                                             : "-"
                                     }
                                     //TODO delete or complete
-                                    eventsCount={
-                                        userData.Events !== undefined ? userData.Events.length : "-"
-                                    }
+                                    eventsCount={userData.Events !== undefined ? userData.Events.length : "-"}
                                     rating={rating}
-                            /> }
+                                />
+                            }
                             <Grid
                                 container
                                 item
@@ -330,7 +332,7 @@ const UserProfilePage = () => {
                                         }}
                                     />
                                 </Grid>
-                                </Grid>   
+                            </Grid>
                             {userData.Reports !== undefined ? (
                                 <Grid
                                     container

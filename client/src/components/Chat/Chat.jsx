@@ -94,7 +94,7 @@ const Chat = ({ eventId, companyId }) => {
     };
 
     const canSend =
-        !chat?.isPublic ||
+        chat?.isPublic ||
         (localStorage.getItem("role") === "company" && companyId === Number.parseInt(localStorage.getItem("id")));
 
     const send = async () => {
