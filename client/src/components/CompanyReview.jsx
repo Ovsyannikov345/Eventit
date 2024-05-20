@@ -11,17 +11,17 @@ const CompanyReview = ({ companyReview }) => {
             item
             padding={"15px"}
             gap={"8px"}
-            style={{ border: "2px solid #DDC12C", borderRadius: "10px" }}
+            style={{ border: "2px solid #729CDB", borderRadius: "10px" }}
         >
             <Button style={{ padding: 0 }} onClick={() => navigate(`/user/${companyReview.User.id}`)}>
                 <Avatar
-                    src={
-                        companyReview.User.id !== undefined
-                            ? `http://localhost:5000/api/users/${
-                                  companyReview.User.id
-                              }/avatar?jwt=${localStorage.getItem("jwt")}`
-                            : ""
-                    }
+                    //src={
+                    //    companyReview.User.id !== undefined
+                    //        ? `http://localhost:5000/api/users/${
+                    //              companyReview.User.id
+                    //          }/avatar?jwt=${localStorage.getItem("jwt")}`
+                    //        : ""
+                    //}
                     variant="square"
                     sx={{ width: 60, height: 60 }}
                 />
@@ -32,12 +32,12 @@ const CompanyReview = ({ companyReview }) => {
                 flexGrow={1}
                 sx={{ flexDirection: { xs: "column", md: "row" } }}
             >
-                <Typography variant="h2" height={"35px"} style={{ borderBottom: "2px solid #729CDB" }} sx={{ fontSize: { xs: "20px", md: "24px" } }}>
-                    {companyReview.User.lastName + " " + companyReview.User.firstName}
+                <Typography variant="h4" height={"35px"} style={{ borderBottom: "2px solid #729CDB" }} sx={{ fontSize: { xs: "20px", md: "24px" } }}>
+                    {companyReview.user.lastName + " " + companyReview.user.firstName}
                 </Typography>
                 <Rating name="read-only" value={companyReview.grade} readOnly />
             </Stack>
-            <Typography variant="h3" pl={"67px"} width={"100%"} sx={{ paddingLeft: { xs: "0", md: "67px" } }}>
+            <Typography variant="h5" pl={"67px"} width={"100%"} sx={{ paddingLeft: { xs: "0", md: "67px" } }}>
                 {companyReview.description}
             </Typography>
         </Grid>
