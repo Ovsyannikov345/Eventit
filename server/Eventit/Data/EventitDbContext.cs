@@ -102,10 +102,6 @@ public partial class EventitDbContext : DbContext
                   .HasColumnType("datetime");
             entity.Property(e => e.EntranceFee)
                   .HasColumnType("decimal(9, 2)");
-            entity.Property(e => e.Free)
-                  .HasDefaultValueSql("((1))");
-            entity.Property(e => e.OnlineEvent)
-                  .HasDefaultValueSql("((1))");
             entity.Property(e => e.CreationDate)
                   .HasDefaultValueSql("(getdate())")
                   .HasColumnType("datetime");

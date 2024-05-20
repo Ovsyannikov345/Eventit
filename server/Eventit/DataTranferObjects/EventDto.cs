@@ -17,11 +17,7 @@ namespace Server.DataTranferObjects
 
         public int? AgeRestriction { get; set; }
 
-        public bool OnlineEvent { get; set; }
-
         public decimal? EntranceFee { get; set; }
-
-        public bool Free { get; set; }
 
         public DateTime CreationDate { get; set; }
 

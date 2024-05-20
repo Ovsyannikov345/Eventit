@@ -81,6 +81,8 @@ namespace Eventit.Controllers
 
             var result = _mapper.Map<CompanyDto>(company);
 
+            result.EventsCount = await _context.Events.Where(e => e.CompanyId == result.Id).CountAsync();
+
             return Ok(result);
         }
 
@@ -103,6 +105,8 @@ namespace Eventit.Controllers
             }
 
             var result = _mapper.Map<CompanyDto>(company);
+
+            result.EventsCount = await _context.Events.Where(e => e.CompanyId == result.Id).CountAsync();
 
             return Ok(result);
         }

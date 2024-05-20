@@ -1,4 +1,6 @@
-﻿namespace Eventit.DataTranferObjects
+﻿using Server.DataTranferObjects;
+
+namespace Eventit.DataTranferObjects
 {
     public class CompanyDto
     {
@@ -13,5 +15,7 @@
         public string RegistrationNumber { get; set; } = null!;
 
         public CompanyContactPersonDto CompanyContactPerson { get; set; } = null!;
+
+        public int EventsCount { get; set; }
     }
 }

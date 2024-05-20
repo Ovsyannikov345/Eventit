@@ -17,11 +17,7 @@ public partial class Event
 
     public int? AgeRestriction { get; set; }
 
-    public bool OnlineEvent { get; set; }
-
     public decimal? EntranceFee { get; set; }
-
-    public bool Free { get; set; }
 
     public bool IsFinished { get; set; }
     
