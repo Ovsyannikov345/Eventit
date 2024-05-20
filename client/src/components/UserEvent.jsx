@@ -44,7 +44,7 @@ const UserEvent = ({ event }) => {
             >
                 {event.title}
             </Typography>
-            <Typography variant="h6">{event.place.name}</Typography>
+            <Typography variant="h6">{event.place?.name || "Онлайн"}</Typography>
             <Typography variant="body1">{moment(event.startDate).format("D MMMM [в] HH:mm")}</Typography>
             <Typography variant="body1">
                 {event.entranceFee ? addNoun(event.entranceFee, ["рубль", "рубля", "рублей"]) : "Бесплатно"},{" "}
