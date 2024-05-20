@@ -26,6 +26,7 @@ namespace Server.Mapping
             CreateMap<Event, EventDto>()
                 .ForMember(dest => dest.Company, opt => opt.MapFrom(src => src.Company))
                 .ForMember(dest => dest.Place, opt => opt.MapFrom(src => src.Place))
+                .ForMember(dest => dest.EventReviews, opt => opt.MapFrom(src => src.EventReviews))
                 .ReverseMap();
             CreateMap<Place, PlaceDto>()
                 .ForMember(dest => dest.PlaceReviews, opt => opt.MapFrom(src => src.PlaceReviews))

@@ -106,6 +106,8 @@ namespace Eventit.Controllers
                     .ThenInclude(c => c.CompanyContactPerson)
                 .Include(e => e.Place)
                     .ThenInclude(p => p!.PlaceReviews)
+                .Include(e => e.EventReviews)
+                    .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if (@event == null)
@@ -273,6 +275,22 @@ namespace Eventit.Controllers
             @event.Users.Add(user);
             await _context.SaveChangesAsync();
 
+            if (@event.StartDate > DateTime.Now)
+            {
+                Notification reminderNotification = new Notification()
+                {
+                    Type = "eventStart",
+                    Title = "Мероприятие скоро начнется",
+                    Description = $"\"{@event.Title}\" начнется в течение 24 часов",
+                    ShowFrom = @event.StartDate.AddHours(-24),
+                    UserId = user.Id,
+                    EventId = @event.Id,
+                };
+
+                await _context.Notifications.AddAsync(reminderNotification);
+                await _context.SaveChangesAsync();
+            }
+
             return Ok(_mapper.Map<ICollection<UserDto>>(@event.Users));
         }
 
@@ -316,6 +334,18 @@ namespace Eventit.Controllers
             @event.Users.Remove(user);
             await _context.SaveChangesAsync();
 
+            var notificationToRemove = await _context.Notifications.SingleOrDefaultAsync(n =>
+                n.UserId == userId &&
+                n.Type == "eventStart" &&
+                n.Description != null &&
+                n.Description.Contains(@event.Title));
+
+            if (notificationToRemove != null)
+            {
+                _context.Notifications.Remove(notificationToRemove);
+                await _context.SaveChangesAsync();
+            }
+
             return Ok(_mapper.Map<ICollection<UserDto>>(@event.Users));
         }
 
@@ -335,7 +365,10 @@ namespace Eventit.Controllers
                 return BadRequest();
             }
 
-            Event? @event = await _context.Events.SingleOrDefaultAsync(e => e.Id == id);
+            Event? @event = await _context.Events
+                .Include(e => e.Users)
+                .Include(e => e.Place)
+                .SingleOrDefaultAsync(e => e.Id == id);
 
             if (@event == null)
             {
@@ -353,6 +386,35 @@ namespace Eventit.Controllers
             }
 
             @event.IsFinished = true;
+            await _context.SaveChangesAsync();
+
+            if (@event.Place != null)
+            {
+                Notification placeReviewNotification = new Notification()
+                {
+                    Type = "placeReview",
+                    Title = $"\"{@event.Title}\" завершено",
+                    Description = "Оставьте оценку места проведения",
+                    ShowFrom = DateTime.Now,
+                    CompanyId = @event.CompanyId,
+                    EventId = @event.Id,
+                };
+
+                await _context.Notifications.AddAsync(placeReviewNotification);
+                await _context.SaveChangesAsync();
+            }
+
+            List<Notification> eventReviewNotifications = @event.Users.Select(user => new Notification()
+            {
+                Type = "eventReview",
+                Title = $"\"{@event.Title}\" завершено",
+                Description = "Оставьте оценку мероприятия",
+                ShowFrom = DateTime.Now,
+                UserId = user.Id,
+                EventId = @event.Id,
+            }).ToList();
+
+            await _context.Notifications.AddRangeAsync(eventReviewNotifications);
             await _context.SaveChangesAsync();
 
             return Ok();

@@ -9,6 +9,8 @@ public partial class PlaceReview
 
     public int Grade { get; set; }
 
+    public int? EventId { get; set; }
+
     public int CompanyId { get; set; }
 
     public virtual Company Company { get; set; } = null!;

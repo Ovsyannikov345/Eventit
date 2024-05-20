@@ -128,6 +128,9 @@ public partial class EventitDbContext : DbContext
 
         modelBuilder.Entity<Notification>(entity =>
         {
+            entity.Property(e => e.Type)
+                  .HasMaxLength(20)
+                  .IsUnicode(false);
             entity.Property(e => e.Title)
                   .HasMaxLength(100)
                   .IsUnicode(true);
@@ -139,6 +142,9 @@ public partial class EventitDbContext : DbContext
                   .HasColumnType("datetime");
             entity.Property(e => e.IsRead)
                   .HasDefaultValue(false);
+            entity.Property(e => e.ShowFrom)
+            .HasDefaultValueSql("(getdate())")
+                  .HasColumnType("datetime");
         });
 
         modelBuilder.Entity<Place>(entity =>

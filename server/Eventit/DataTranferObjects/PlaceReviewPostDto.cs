@@ -7,5 +7,7 @@ namespace Eventit.DataTranferObjects
         public int Grade { get; set; }
 
         public int PlaceId { get; set; }
+
+        public int? EventId { get; set; }
     }
 }

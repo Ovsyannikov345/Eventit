@@ -10,6 +10,8 @@ namespace Eventit.DataTranferObjects
 
         public int CompanyId { get; set; }
 
+        public int? EventId { get; set; }
+
         public CompanyDto Company { get; set; } = null!;
     }
 }

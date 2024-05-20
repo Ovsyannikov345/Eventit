@@ -26,5 +26,7 @@ namespace Server.DataTranferObjects
         public CompanyDto Company { get; set; } = null!;
 
         public PlaceDto? Place { get; set; }
+
+        public List<EventReviewDto> EventReviews { get; set; } = new List<EventReviewDto>();
     }
 }

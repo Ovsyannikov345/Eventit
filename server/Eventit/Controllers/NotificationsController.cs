@@ -42,14 +42,14 @@ namespace Eventit.Controllers
 
             if (int.TryParse(tokenCompanyId, out int companyId))
             {
-                var notifications = await _context.Notifications.Where(n => n.CompanyId == companyId).ToListAsync();
+                var notifications = await _context.Notifications.Where(n => n.CompanyId == companyId && n.ShowFrom <= DateTime.Now).ToListAsync();
 
                 return Ok(_mapper.Map<IEnumerable<NotificationDto>>(notifications));
             }
 
             if (int.TryParse(tokenUserId, out int userId))
             {
-                var notifications = await _context.Notifications.Where(n => n.UserId == userId).ToListAsync();
+                var notifications = await _context.Notifications.Where(n => n.UserId == userId && n.ShowFrom <= DateTime.Now).ToListAsync();
 
                 return Ok(_mapper.Map<IEnumerable<NotificationDto>>(notifications));
             }
