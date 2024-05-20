@@ -14,6 +14,7 @@ import UserEditForm from "../../components/forms/UserEditForm";
 import addNoun from "../../utils/fieldsParser";
 import moment from "moment";
 import { useParams } from "react-router-dom";
+import UserEvent from "../../components/UserEvent";
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -87,6 +88,20 @@ const UserProfilePage = () => {
 
         setError(false);
     };
+
+    const eventsCount = useMemo(() => {
+        if (!userData.events || userData.events.length === 0) {
+            return null;
+        }
+
+        var count = 0;
+
+        userData.events.forEach((event) => {
+            count++;
+        });
+        return count;
+
+    }, [userData]);
 
     // TODO implement.
     const applyChanges = async (updatedUserData) => {
@@ -280,7 +295,9 @@ const UserProfilePage = () => {
                                             : "-"
                                     }
                                     //TODO delete or complete
-                                    eventsCount={userData.Events !== undefined ? userData.Events.length : "-"}
+                                    eventsCount={
+                                        eventsCount  ? eventsCount : "-"
+                                    }
                                     rating={rating}
                                 />
                             }
@@ -343,7 +360,7 @@ const UserProfilePage = () => {
                                         paddingLeft: { xs: "5px", md: 0 },
                                     }}
                                 >
-                                    {userData.Reports.filter((report) => report.UserReview != null).length > 0 ? (
+                                    {userData.events.length >  0 ? (
                                         <>
                                             <Typography
                                                 variant="h2"
@@ -351,7 +368,7 @@ const UserProfilePage = () => {
                                                 display={"flex"}
                                                 alignItems={"center"}
                                             >
-                                                Отзывы
+                                                Посещённые мероприятия
                                             </Typography>
 
                                             <Grid
@@ -361,14 +378,11 @@ const UserProfilePage = () => {
                                                 flexDirection={"column"}
                                                 gap={"25px"}
                                             >
-                                                {/* {userData.Reports.filter(
-                                                    (report) => report.UserReview != null
-                                                ).map((report) => (
-                                                    <UserReview
-                                                        key={report.UserReview.id}
-                                                        userReview={report.UserReview}
-                                                    />
-                                                ))} */}
+
+                                            {userData.events.map((event) => (
+                                                <UserEvent key={event.id} event={event} />
+                                            ))}
+
                                             </Grid>
                                         </>
                                     ) : (
@@ -378,7 +392,7 @@ const UserProfilePage = () => {
                                             display={"flex"}
                                             alignItems={"center"}
                                         >
-                                            Отзывов пока нет
+                                            Мероприятий пока нет
                                         </Typography>
                                     )}
                                 </Grid>
