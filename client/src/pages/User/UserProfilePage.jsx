@@ -89,6 +89,20 @@ const UserProfilePage = () => {
         setError(false);
     };
 
+    const eventsCount = useMemo(() => {
+        if (!userData.events || userData.events.length === 0) {
+            return null;
+        }
+
+        var count = 0;
+
+        userData.events.forEach((event) => {
+            count++;
+        });
+        return count;
+        
+    }, [userData]);
+
     // TODO implement.
      const applyChanges = async (updatedUserData) => {
 
@@ -278,7 +292,7 @@ const UserProfilePage = () => {
                                     }
                                     //TODO delete or complete
                                     eventsCount={
-                                        userData.Events !== undefined ? userData.Events.length : "-"
+                                        eventsCount  ? eventsCount : "-"
                                     }
                                     rating={rating}
                             /> }
