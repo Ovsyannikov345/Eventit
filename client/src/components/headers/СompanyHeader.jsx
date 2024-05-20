@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AppBar, Toolbar, Button, IconButton, Grid, Snackbar, Alert } from "@mui/material";
+import { AppBar, Toolbar, Button, IconButton, Grid, Snackbar, Alert, Menu } from "@mui/material";
 import Logo from "../../img/logo.png";
 import CreateIcon from "@mui/icons-material/AddBox";
 import EventIcon from "@mui/icons-material/Event";
@@ -11,6 +11,7 @@ import styled from "styled-components";
 import SupportRequestModal from "../modals/SupportRequestModal";
 import { useNavigate } from "react-router-dom";
 import { COMPANY_EVENTS_ROUTE, COMPANY_PROFILE_ROUTE, EVENT_CREATION_ROUTE } from "../../utils/consts";
+import NotificationTabs from "../modals/NotificationsModal/NotificationTabs";
 
 const LogoContainer = styled.div`
     width: 120px;
@@ -56,6 +57,16 @@ const CompanyHeader = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [success, setSuccess] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
+
+    const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
+
+    const handleMenuOpen = (event) => {
+        setNotificationAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setNotificationAnchorEl(null);
+    };
 
     const displayError = (message) => {
         setErrorMessage(message);
@@ -110,8 +121,12 @@ const CompanyHeader = () => {
                         </Grid>
                     </Navigation>
                     <Activity>
-                        {/* TODO implement */}
-                        <IconButton color="inherit" title="Уведомления" sx={{ fontSize: "30px" }}>
+                        <IconButton
+                            color="inherit"
+                            title="Уведомления"
+                            sx={{ fontSize: "30px" }}
+                            onClick={handleMenuOpen}
+                        >
                             <NotificationsIcon fontSize="20px" />
                         </IconButton>
                         <IconButton
@@ -139,6 +154,26 @@ const CompanyHeader = () => {
                             <LogoutIcon fontSize="20px" />
                         </IconButton>
                     </Activity>
+                    <Menu
+                        anchorEl={notificationAnchorEl}
+                        open={Boolean(notificationAnchorEl)}
+                        onClose={handleMenuClose}
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "right",
+                        }}
+                        transformOrigin={{
+                            vertical: "top",
+                            horizontal: "right",
+                        }}
+                        PaperProps={{
+                            style: {
+                                width: 450,
+                            },
+                        }}
+                    >
+                        <NotificationTabs displayError={displayError} />
+                    </Menu>
                 </Toolbar>
             </AppBar>
             <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
