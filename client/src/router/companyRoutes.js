@@ -9,18 +9,18 @@ import {
 import CreateEventPage from "../pages/Company/CreateEventPage";
 import CompanyProfilePage from "../pages/Company/CompanyProfilePage";
 import UserProfilePage from "../pages/User/UserProfilePage";
+import CompanyEventsPage from "../pages/Company/CompanyEventsPage";
+import CompanyEventDetailsPage from "../pages/Company/CompanyEventDetailsPage";
 
 export const companyRoutes = [
-    // TODO implement.
-    // {
-    //     path: COMPANY_EVENTS_ROUTE,
-    //     Component: MyEventsPage,
-    // },
-    // TODO implement.
-    // {
-    //     path: COMPANY_EVENT_DETAILS_ROUTE,
-    //     Component: CompanyEventDetails,
-    // },
+    {
+        path: COMPANY_EVENTS_ROUTE,
+        Component: CompanyEventsPage,
+    },
+    {
+        path: COMPANY_EVENT_DETAILS_ROUTE,
+        Component: CompanyEventDetailsPage,
+    },
     {
         path: SPECIFIC_USER_PROFILE_ROUTE,
         Component: UserProfilePage,
