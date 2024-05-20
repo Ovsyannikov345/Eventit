@@ -33,12 +33,12 @@ const CompanyReview = ({ companyReview }) => {
                 sx={{ flexDirection: { xs: "column", md: "row" } }}
             >
                 <Typography variant="h2" height={"35px"} style={{ borderBottom: "2px solid #729CDB" }} sx={{ fontSize: { xs: "20px", md: "24px" } }}>
-                    {companyReview.User.surname + " " + companyReview.User.name}
+                    {companyReview.User.lastName + " " + companyReview.User.firstName}
                 </Typography>
                 <Rating name="read-only" value={companyReview.grade} readOnly />
             </Stack>
             <Typography variant="h3" pl={"67px"} width={"100%"} sx={{ paddingLeft: { xs: "0", md: "67px" } }}>
-                {companyReview.text}
+                {companyReview.description}
             </Typography>
         </Grid>
     );

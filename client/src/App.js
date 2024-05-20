@@ -17,6 +17,7 @@ const App = () => {
                 main: "#000000",
             },
         },
+        
         breakpoints: {
             values: {
                 xs: 0,
