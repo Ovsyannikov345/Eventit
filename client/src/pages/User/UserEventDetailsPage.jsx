@@ -7,6 +7,7 @@ import ExitIcon from "@mui/icons-material/ExitToApp";
 import { useNavigate, useParams } from "react-router-dom";
 import { getEvent, getEventParticipants, joinEvent, leaveEvent } from "../../api/eventsApi";
 import { getCompanyReviews } from "../../api/companiesApi";
+import { postEventReview } from "../../api/eventReviewsApi";
 import moment from "moment";
 import UserHeader from "./../../components/headers/UserHeader";
 import NavigateBack from "./../../components/NavigateBack";
@@ -16,6 +17,7 @@ import ShowDetailsButton from "./../../components/buttons/ShowDetailsButton";
 import HideDetailsButton from "./../../components/buttons/HideDetailsButton";
 import ParticipantsModal from "../../components/modals/ParticipantsModal/ParticipantsModal";
 import Chat from "../../components/Chat/Chat";
+import EventReviewModal from "./../../components/modals/EventReviewModal";
 
 const UserEventDetailsPage = () => {
     const { id } = useParams();
@@ -49,8 +51,10 @@ const UserEventDetailsPage = () => {
     const [event, setEvent] = useState(null);
     const [companyReviews, setCompanyReviews] = useState(null);
     const [participants, setParticipants] = useState(null);
+    const [isReviewSent, setIsReviewSent] = useState(true);
 
     const [isParticipantsModalOpen, setIsParticipantsModalOpen] = useState(false);
+    const [isEventReviewModalOpen, setIsEventReviewModalOpen] = useState(true);
 
     const [showDetails, setShowDetails] = useState(false);
 
@@ -67,6 +71,9 @@ const UserEventDetailsPage = () => {
 
             companyId = response.data.company.id;
             setEvent(response.data);
+            setIsReviewSent(
+                response.data.eventReviews.some((r) => r.user.id === Number.parseInt(localStorage.getItem("id")))
+            );
         };
 
         const loadCompanyReviews = async () => {
@@ -163,12 +170,40 @@ const UserEventDetailsPage = () => {
         displaySuccess("Вы покинули мероприятие");
     };
 
+    const sendEventReview = async (reviewData) => {
+        const response = await postEventReview({
+            description: reviewData.description,
+            grade: reviewData.grade,
+            eventId: event.id,
+        });
+
+        if (!response.status || response.status >= 300) {
+            displayError(response.data.error);
+            setIsEventReviewModalOpen(false);
+            return;
+        }
+
+        setIsEventReviewModalOpen(false);
+        displaySuccess("Оценка отправлена");
+    };
+
     return (
         <>
             <ParticipantsModal
                 isOpen={isParticipantsModalOpen}
                 onClose={() => setIsParticipantsModalOpen(false)}
                 participants={participants}
+            />
+            <EventReviewModal
+                isOpen={
+                    event?.isFinished &&
+                    participants &&
+                    participants.some((p) => p.id === Number.parseInt(localStorage.getItem("id"))) &&
+                    !isReviewSent &&
+                    isEventReviewModalOpen
+                }
+                onClose={() => setIsEventReviewModalOpen(false)}
+                acceptHandler={sendEventReview}
             />
             <Grid
                 container
