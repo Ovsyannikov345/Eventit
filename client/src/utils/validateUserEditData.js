@@ -1,5 +1,3 @@
-import moment
- from "moment";
 const validateUserEditData = (values) => {
     const errors = {};
 
@@ -9,10 +7,6 @@ const validateUserEditData = (values) => {
 
     if (!values.lastName) {
         errors.lastName = "Обязательное поле";
-    }
-
-    if (!values.patronymic) {
-        errors.patronymic = "Обязательное поле";
     }
 
     if (!values.email) {
