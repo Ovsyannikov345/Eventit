@@ -1,5 +1,4 @@
 ﻿using Eventit.Models;
-// TODO fix all namespaces
 using Server.DataTranferObjects;
 
 namespace Eventit.DataTranferObjects
