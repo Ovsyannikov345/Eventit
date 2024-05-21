@@ -149,6 +149,72 @@ namespace Eventit.Controllers
             });
         }
 
+        // GET api/Users/5/avatar
+        [HttpGet("{id}/avatar")]
+        [AllowAnonymous]
+        public IActionResult GetUserAvatar(int id)
+        {
+            string uploadsFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "images", "users");
+
+            string filePath = Path.Combine(uploadsFolderPath, $"{id}.png");
+
+            if (filePath == null || !System.IO.File.Exists(filePath))
+            {
+                return NotFound("Image not found");
+            }
+
+            var image = System.IO.File.OpenRead(filePath);
+
+            return File(image, "image/png");
+        }
+
+        // POST api/Users/5/avatar
+        [HttpPost("{id}/avatar")]
+        public async Task<IActionResult> UploadUserAvatar(int id, IFormFile image)
+        {
+            string? tokenUserId = HttpContext.User.FindFirst("UserId")?.Value;
+
+            if (tokenUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!int.TryParse(tokenUserId, out int userId))
+            {
+                return Unauthorized();
+            }
+
+            if (userId != id)
+            {
+                return Forbid();
+            }
+
+            if (image == null || image.Length == 0)
+            {
+                return BadRequest("No image uploaded");
+            }
+
+            string uploadsFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "images", "users");
+
+            Directory.CreateDirectory(uploadsFolderPath);
+
+            string filePath = Path.Combine(uploadsFolderPath, $"{id}.png");
+
+            try
+            {
+                using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+
+                return Ok();
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
         private async Task<bool> IsEmailFree(string email)
         {
             bool userEmailExists = await _context.Users.AnyAsync(u => u.Email == email);

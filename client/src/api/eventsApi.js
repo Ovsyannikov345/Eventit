@@ -181,6 +181,29 @@ const finishEvent = async (id) => {
     }
 };
 
+const sendPhoto = async (id, image) => {
+    try {
+        let formData = new FormData();
+        formData.append("image", image);
+
+        const response = await host.post(`/Events/${id}/photo`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+
+        return response;
+    } catch (error) {
+        if (error.response) {
+            return error.response;
+        } else if (error.request) {
+            console.log("Server did not respond.");
+        } else {
+            console.log("Error while creating request");
+        }
+    }
+};
+
 export {
     getEvents,
     getSelfEvents,
@@ -191,4 +214,5 @@ export {
     joinEvent,
     leaveEvent,
     finishEvent,
+    sendPhoto,
 };

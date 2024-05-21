@@ -7,7 +7,13 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import { styled } from "@mui/material/styles";
 import moment from "moment";
 import ProfileCards from "../../components/ProfileCards";
-import { getCompanyReviews, getCompanyProfile, getCompany, putCompany } from "../../api/companiesApi";
+import {
+    getCompanyReviews,
+    getCompanyProfile,
+    getCompany,
+    putCompany,
+    updateAvatar,
+} from "../../api/companiesApi";
 import { useTheme } from "@emotion/react";
 import CompanyReview from "../../components/CompanyReview";
 import CompanyEditForm from "../../components/forms/CompanyEditForm";
@@ -114,48 +120,40 @@ const CompanyProfilePage = () => {
             return;
         }
 
-        setCompanyData(response.data);
-        setEditMode(false);
-        window.location.reload();
+        const imageSuccess = await sendImage();
 
-        //     const imageSuccess = await sendImage();
-
-        //     if (imageSuccess) {
-        //         setCompanyData(response.data);
-        //         setEditMode(false);
-        //         window.location.reload();
-        //     }
+        if (imageSuccess) {
+            setCompanyData(response.data);
+            setEditMode(false);
+            window.location.reload();
+        }
     };
 
-    // TODO implement.
-    // const sendImage = async () => {
-    //     if (image === undefined) {
-    //         return true;
-    //     }
+    const sendImage = async () => {
+        if (image === undefined) {
+            return true;
+        }
 
-    //     const response = await updateAvatar(companyData.id, image);
+        const response = await updateAvatar(companyData.id, image);
 
-    //     if (!response) {
-    //         displayError("Сервис временно недоступен");
-    //         return false;
-    //     }
+        if (!response) {
+            displayError("Сервис временно недоступен");
+            return false;
+        }
 
-    //     if (response.status === 401) {
-    //         localStorage.removeItem("jwt");
-    //         localStorage.removeItem("role");
-    //         window.location.reload();
-    //     }
+        if (response.status === 401) {
+            window.location.reload();
+        }
 
-    //     if (response.status >= 300) {
-    //         displayError("Ошибка при отправке изображения. Код: " + response.status);
-    //         console.log(response);
-    //         return false;
-    //     }
+        if (response.status >= 300) {
+            displayError("Ошибка при отправке изображения.");
+            return false;
+        }
 
-    //     setImage(undefined);
+        setImage(undefined);
 
-    //     return true;
-    // };
+        return true;
+    };
 
     return (
         <Grid
@@ -212,9 +210,7 @@ const CompanyProfilePage = () => {
                         <Avatar
                             src={
                                 companyData.id !== undefined
-                                    ? `http://localhost:5000/api/companies/${
-                                          companyData.id
-                                      }/avatar?jwt=${localStorage.getItem("jwt")}`
+                                    ? `http://localhost:5000/api/Companies/${companyData.id}/avatar`
                                     : ""
                             }
                             variant="square"

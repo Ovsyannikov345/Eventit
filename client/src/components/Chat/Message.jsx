@@ -10,7 +10,15 @@ const Message = ({ message, fromOwner, fromSelf }) => {
         >
             {!fromSelf && (
                 <ListItemAvatar sx={{ marginTop: "6px" }}>
-                    <Avatar alt={message.name} src={message.avatar} style={{ width: 40, height: 40 }} />
+                    <Avatar
+                        alt={message.name}
+                        src={
+                            message.user
+                                ? `http://localhost:5000/api/Users/${message.user.id}/avatar`
+                                : `http://localhost:5000/api/Companies/${message.company.id}/avatar`
+                        }
+                        style={{ width: 40, height: 40 }}
+                    />
                 </ListItemAvatar>
             )}
             <ListItemText

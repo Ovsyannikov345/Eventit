@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Eventit.Controllers
 {
@@ -186,6 +187,72 @@ namespace Eventit.Controllers
             {
                 IsAvailable = isAvailable,
             });
+        }
+
+        // GET api/Companies/5/avatar
+        [HttpGet("{id}/avatar")]
+        [AllowAnonymous]
+        public IActionResult GetCompanyAvatar(int id)
+        {
+            string uploadsFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "images", "companies");
+
+            string filePath = Path.Combine(uploadsFolderPath, $"{id}.png");
+
+            if (filePath == null || !System.IO.File.Exists(filePath))
+            {
+                return NotFound("Image not found");
+            }
+
+            var image = System.IO.File.OpenRead(filePath);
+
+            return File(image, "image/png");
+        }
+
+        // POST api/Companies/5/avatar
+        [HttpPost("{id}/avatar")]
+        public async Task<IActionResult> UploadCompanyAvatar(int id, IFormFile image)
+        {
+            string? tokenCompanyId = HttpContext.User.FindFirst("CompanyId")?.Value;
+
+            if (tokenCompanyId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!int.TryParse(tokenCompanyId, out int companyId))
+            {
+                return Unauthorized();
+            }
+
+            if (companyId != id)
+            {
+                return Forbid();
+            }
+
+            if (image == null || image.Length == 0)
+            {
+                return BadRequest("No image uploaded");
+            }
+
+            string uploadsFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "images", "companies");
+
+            Directory.CreateDirectory(uploadsFolderPath);
+
+            string filePath = Path.Combine(uploadsFolderPath, $"{id}.png");
+
+            try
+            {
+                using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+
+                return Ok();
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
         }
 
         private async Task<bool> IsEmailFree(string email)

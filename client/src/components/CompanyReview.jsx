@@ -15,13 +15,7 @@ const CompanyReview = ({ companyReview }) => {
         >
             <Button style={{ padding: 0 }} onClick={() => navigate(`/user/${companyReview.user.id}`)}>
                 <Avatar
-                    //src={
-                    //    companyReview.User.id !== undefined
-                    //        ? `http://localhost:5000/api/users/${
-                    //              companyReview.User.id
-                    //          }/avatar?jwt=${localStorage.getItem("jwt")}`
-                    //        : ""
-                    //}
+                    src={`http://localhost:5000/api/Users/${companyReview.user.id}/avatar`}
                     variant="square"
                     sx={{ width: 60, height: 60 }}
                 />

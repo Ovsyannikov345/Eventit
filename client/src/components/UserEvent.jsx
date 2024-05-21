@@ -1,6 +1,6 @@
 import { Button, Grid, Typography } from "@mui/material";
 import React from "react";
-import EventImage from "../img/eventTempImage.png";
+import EventImage from "../img/eventTempImage.svg";
 import addNoun from "./../utils/fieldsParser";
 import moment from "moment";
 import "moment/locale/ru";
@@ -10,6 +10,10 @@ const UserEvent = ({ event }) => {
     const navigate = useNavigate();
 
     moment.locale("ru");
+
+    const handleImageError = (event) => {
+        event.target.src = EventImage;
+    };
 
     return (
         <Grid
@@ -25,9 +29,9 @@ const UserEvent = ({ event }) => {
             borderRadius={"10px"}
         >
             <Grid container item justifyContent={"center"} alignItems={"center"}>
-                {/* TODO impelement */}
                 <img
-                    src={EventImage}
+                    src={`http://localhost:5000/api/Events/${event.id}/photo`}
+                    onError={handleImageError}
                     alt="event"
                     style={{
                         maxWidth: "240px",

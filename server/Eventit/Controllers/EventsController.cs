@@ -5,6 +5,7 @@ using Eventit.Models;
 using AutoMapper;
 using Server.DataTranferObjects;
 using Eventit.DataTranferObjects;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Eventit.Controllers
 {
@@ -155,7 +156,10 @@ namespace Eventit.Controllers
             _context.Chats.Add(chat);
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new
+            {
+                EventId = @event.Id,
+            });
         }
 
         // GET: api/Events/5/chat
@@ -418,6 +422,55 @@ namespace Eventit.Controllers
             await _context.SaveChangesAsync();
 
             return Ok();
+        }
+
+        // GET api/Events/5/photo
+        [HttpGet("{id}/photo")]
+        [AllowAnonymous]
+        public IActionResult GetEventPhoto(int id)
+        {
+            string uploadsFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "images", "events");
+
+            string filePath = Path.Combine(uploadsFolderPath, $"{id}.png");
+
+            if (filePath == null || !System.IO.File.Exists(filePath))
+            {
+                return NotFound("Image not found");
+            }
+
+            var image = System.IO.File.OpenRead(filePath);
+
+            return File(image, "image/png");
+        }
+
+        // POST api/Events/5/photo
+        [HttpPost("{id}/photo")]
+        public async Task<IActionResult> UploadEventPhoto(int id, IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+            {
+                return BadRequest("No image uploaded");
+            }
+
+            string uploadsFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "images", "events");
+
+            Directory.CreateDirectory(uploadsFolderPath);
+
+            string filePath = Path.Combine(uploadsFolderPath, $"{id}.png");
+
+            try
+            {
+                using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+
+                return Ok();
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
         }
     }
 }

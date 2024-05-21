@@ -11,7 +11,7 @@ import { postPlaceReview } from "../../api/placeReviewsApi";
 import moment from "moment";
 import CompanyHeader from "../../components/headers/СompanyHeader";
 import NavigateBack from "./../../components/NavigateBack";
-import EventImage from "../../img/eventTempImage.png";
+import EventImage from "../../img/eventTempImage.svg";
 import addNoun from "./../../utils/fieldsParser";
 import ShowDetailsButton from "./../../components/buttons/ShowDetailsButton";
 import HideDetailsButton from "./../../components/buttons/HideDetailsButton";
@@ -75,7 +75,11 @@ const CompanyEventDetailsPage = () => {
             setEvent(response.data);
             setIsPlaceGraded(
                 response.data.place?.placeReviews
-                    ? response.data.place.placeReviews.some((r) => r.eventId === Number.parseInt(id) && r.companyId === Number.parseInt(localStorage.getItem("id")))
+                    ? response.data.place.placeReviews.some(
+                          (r) =>
+                              r.eventId === Number.parseInt(id) &&
+                              r.companyId === Number.parseInt(localStorage.getItem("id"))
+                      )
                     : false
             );
         };
@@ -188,6 +192,10 @@ const CompanyEventDetailsPage = () => {
         displaySuccess("Оценка отправлена");
     };
 
+    const handleImageError = (event) => {
+        event.target.src = EventImage;
+    };
+
     return (
         <>
             <ParticipantsModal
@@ -242,9 +250,9 @@ const CompanyEventDetailsPage = () => {
                     </Grid>
                     <Grid container item justifyContent={"space-between"} pl={"30px"}>
                         <Grid container item xs={4} justifyContent={"center"} alignItems={"flex-start"}>
-                            {/* TODO impelement */}
                             <img
-                                src={EventImage}
+                                src={`http://localhost:5000/api/Events/${event?.id}/photo`}
+                                onError={handleImageError}
                                 alt="event"
                                 style={{ maxWidth: "450px", boxShadow: "0px 0px 20px #999999" }}
                             />
@@ -461,8 +469,8 @@ const CompanyEventDetailsPage = () => {
                                             onClick={() => navigate(`/company/${event?.company.id}`)}
                                         >
                                             <Avatar
+                                                src={`http://localhost:5000/api/Companies/${event?.company.id}/avatar`}
                                                 alt={event?.company.name}
-                                                src="/static/images/avatar/1.jpg"
                                                 sx={{ width: 90, height: 90 }}
                                             />
                                         </Button>

@@ -1,22 +1,30 @@
 import React, { useState, useEffect } from "react";
-import {
-    Container,
-    Typography,
-    TextField,
-    Checkbox,
-    FormControlLabel,
-    Button,
-    Input,
-} from "@mui/material";
+import { Container, Typography, TextField, Button } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import CompanyHeader from "../../components/headers/СompanyHeader";
 import { getPlaces, postPlace } from "../../api/placesApi";
-import { postEvent } from "../../api/eventsApi";
+import { postEvent, sendPhoto } from "../../api/eventsApi";
 import Autocomplete from "@mui/material/Autocomplete";
 import StarIcon from "@mui/icons-material/Star";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
+import { styled } from "@mui/material/styles";
+
+const VisuallyHiddenInput = styled("input")({
+    clip: "rect(0 0 0 0)",
+    clipPath: "inset(50%)",
+    height: 1,
+    overflow: "hidden",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    whiteSpace: "nowrap",
+    width: 1,
+});
 
 const CreateEventPage = () => {
+    const navigate = useNavigate();
+
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [startDate, setStartDate] = useState(null);
@@ -28,6 +36,8 @@ const CreateEventPage = () => {
     const [places, setPlaces] = useState([]);
     const [rating, setRating] = useState(null);
     const [selectedPlace, setSelectedPlace] = useState(null);
+
+    const [image, setImage] = useState(undefined);
 
     useEffect(() => {
         const fetchPlaces = async () => {
@@ -41,15 +51,12 @@ const CreateEventPage = () => {
     }, []);
 
     const handleTitleChange = (event) => setTitle(event.target.value);
-    const handleDescriptionChange = (event) =>
-        setDescription(event.target.value);
+    const handleDescriptionChange = (event) => setDescription(event.target.value);
     const handleStartDateChange = (date) => setStartDate(date);
     const handleEndDateChange = (date) => setEndDate(date);
-    const handleAgeRestrictionChange = (event) =>
-        setAgeRestriction(parseInt(event.target.value));
+    const handleAgeRestrictionChange = (event) => setAgeRestriction(parseInt(event.target.value));
     const handleAddressChange = (event) => setAddress(event.target.value);
-    const handleEntranceFeeChange = (event) =>
-        setEntranceFee(event.target.value);
+    const handleEntranceFeeChange = (event) => setEntranceFee(event.target.value);
 
     const handleNameChange = (event, value) => {
         setName(value);
@@ -60,15 +67,10 @@ const CreateEventPage = () => {
         if (selectedPlace) {
             setAddress(selectedPlace.address);
             console.log("rating");
-            if (
-                selectedPlace.placeReviews &&
-                selectedPlace.placeReviews.length > 0
-            ) {
+            if (selectedPlace.placeReviews && selectedPlace.placeReviews.length > 0) {
                 const averageRating =
-                    selectedPlace.placeReviews.reduce(
-                        (sum, review) => sum + review.grade,
-                        0
-                    ) / selectedPlace.placeReviews.length;
+                    selectedPlace.placeReviews.reduce((sum, review) => sum + review.grade, 0) /
+                    selectedPlace.placeReviews.length;
                 setRating(averageRating.toFixed(1));
                 console.log("rating");
             } else {
@@ -96,7 +98,6 @@ const CreateEventPage = () => {
             }
         }
 
-        // Prepare event data
         const eventData = {
             title,
             description,
@@ -105,18 +106,52 @@ const CreateEventPage = () => {
             ageRestriction,
             entranceFee: entranceFee || null,
             placeId: placeId || null,
-            
         };
 
         try {
-            await postEvent(eventData);
-            // Optionally, redirect or show success message
+            const response = await postEvent(eventData);
 
-            //TODO use navigate
-            window.location.reload();
+            if (!response.status || response.status >= 300) {
+                console.error("Failed to create event");
+                return;
+            }
+
+            const imageSuccess = await sendImage(response.data.eventId);
+
+            if (!imageSuccess) {
+                console.error("Failed to send image");
+            }
+
+            navigate("/my-events");
         } catch (error) {
             console.error("Failed to create event", error);
         }
+    };
+
+    const sendImage = async (eventId) => {
+        if (image === undefined) {
+            return true;
+        }
+
+        const response = await sendPhoto(eventId, image);
+
+        if (!response) {
+            console.error("Сервис временно недоступен");
+            return false;
+        }
+
+        if (response.status === 401) {
+            window.location.reload();
+        }
+
+        if (response.status >= 300) {
+            console.error("Ошибка при отправке изображения.");
+            return false;
+        }
+
+        setImage(undefined);
+
+        return true;
     };
 
     return (
@@ -239,11 +274,7 @@ const CreateEventPage = () => {
                                 getOptionLabel={(option) => option.name}
                                 onInputChange={handleNameChange}
                                 renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        placeholder="Название"
-                                        fullWidth
-                                    />
+                                    <TextField {...params} placeholder="Название" fullWidth />
                                 )}
                             />
                             {rating !== null && (
@@ -310,23 +341,17 @@ const CreateEventPage = () => {
                                     id="upload-photo"
                                     name="upload-photo"
                                     type="file"
-                                    accept="image/*"
+                                    accept="image/png"
+                                    onChange={(e) => setImage(e.target.files[0])}
                                 />
-                                <Button
-                                    variant="outlined"
-                                    component="span"
-                                    sx={{
-                                        color: "#729CDB",
-                                        borderColor: "#729CDB",
-                                        transition:
-                                            "color 0.3s, border-color 0.3s",
-                                        "&:hover": {
-                                            color: "#204276",
-                                            borderColor: "#204276",
-                                        },
-                                    }}
-                                >
-                                    Загрузить
+                                <Button component="label" variant="outlined">
+                                    {image !== undefined ? image.name : "ВЫБРАТЬ ФАЙЛ"}
+                                    <VisuallyHiddenInput
+                                        type="file"
+                                        name="avatar"
+                                        onChange={(e) => setImage(e.target.files[0])}
+                                        accept="image/png"
+                                    />
                                 </Button>
                             </label>
                         </Container>
@@ -353,10 +378,7 @@ const CreateEventPage = () => {
                                 value={ageRestriction}
                                 onChange={handleAgeRestrictionChange}
                             />
-                            <Typography
-                                variant="body1"
-                                sx={{ marginLeft: "1vw", marginRight: "1vw" }}
-                            >
+                            <Typography variant="body1" sx={{ marginLeft: "1vw", marginRight: "1vw" }}>
                                 лет
                             </Typography>
                         </div>
@@ -379,10 +401,7 @@ const CreateEventPage = () => {
                                 onChange={handleEntranceFeeChange}
                                 value={entranceFee}
                             />
-                            <Typography
-                                variant="body1"
-                                sx={{ marginLeft: "1vw", marginRight: "1vw" }}
-                            >
+                            <Typography variant="body1" sx={{ marginLeft: "1vw", marginRight: "1vw" }}>
                                 р.
                             </Typography>
                         </div>

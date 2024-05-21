@@ -9,7 +9,11 @@ const ParticipantCard = ({ participant }) => {
     return (
         <Grid container item alignItems={"center"}>
             <Button style={{ padding: 0 }} onClick={() => navigate(`/user/${participant.id}`)}>
-                <Avatar alt={participant.name} src="/static/images/avatar/1.jpg" sx={{ width: 50, height: 50 }} />
+                <Avatar
+                    alt={participant.name}
+                    src={`http://localhost:5000/api/Users/${participant.id}/avatar`}
+                    sx={{ width: 50, height: 50 }}
+                />
             </Button>
             <Grid item>
                 <Grid container flexDirection={"column"}>

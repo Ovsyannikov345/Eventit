@@ -7,9 +7,7 @@ import UserHeader from "../../components/headers/UserHeader";
 import CompanyHeader from "../../components/headers/СompanyHeader";
 import NavigateBack from "../../components/NavigateBack";
 import ProfileCards from "../../components/ProfileCards";
-//import UserReview from "../../components/UserReview";
-//import { getProfile, getUser, updateAvatar, updateUser } from "../api/userApi";
-import { getUserProfile, getUser, putUser } from "../../api/usersApi";
+import { getUserProfile, getUser, putUser, updateAvatar } from "../../api/usersApi";
 import UserEditForm from "../../components/forms/UserEditForm";
 import addNoun from "../../utils/fieldsParser";
 import moment from "moment";
@@ -95,48 +93,40 @@ const UserProfilePage = () => {
             return;
         }
 
-        setUserData(response.data);
-        setEditMode(false);
-        window.location.reload();
+        const imageSuccess = await sendImage();
 
-        //     const imageSuccess = await sendImage();
-
-        //     if (imageSuccess) {
-        //         setUserData(response.data);
-        //         setEditMode(false);
-        //         window.location.reload();
-        //     }
+        if (imageSuccess) {
+            setUserData(response.data);
+            setEditMode(false);
+            window.location.reload();
+        }
     };
 
-    // TODO implement.
-    // const sendImage = async () => {
-    //     if (image === undefined) {
-    //         return true;
-    //     }
+    const sendImage = async () => {
+        if (image === undefined) {
+            return true;
+        }
 
-    //     const response = await updateAvatar(userData.id, image);
+        const response = await updateAvatar(userData.id, image);
 
-    //     if (!response) {
-    //         displayError("Сервис временно недоступен");
-    //         return false;
-    //     }
+        if (!response) {
+            displayError("Сервис временно недоступен");
+            return false;
+        }
 
-    //     if (response.status === 401) {
-    //         localStorage.removeItem("jwt");
-    //         localStorage.removeItem("role");
-    //         window.location.reload();
-    //     }
+        if (response.status === 401) {
+            window.location.reload();
+        }
 
-    //     if (response.status >= 300) {
-    //         displayError("Ошибка при отправке изображения. Код: " + response.status);
-    //         console.log(response);
-    //         return false;
-    //     }
+        if (response.status >= 300) {
+            displayError("Ошибка при отправке изображения.");
+            return false;
+        }
 
-    //     setImage(undefined);
+        setImage(undefined);
 
-    //     return true;
-    // };
+        return true;
+    };
 
     return (
         <Grid
@@ -172,7 +162,6 @@ const UserProfilePage = () => {
                     }}
                 >
                     <NavigateBack
-                        // TODO complete this part
                         label={id === undefined ? "Главная" : "Назад"}
                         to={id === undefined ? "/orders" : -1}
                     />
@@ -204,9 +193,7 @@ const UserProfilePage = () => {
                         <Avatar
                             src={
                                 userData.id !== undefined
-                                    ? `http://localhost:5000/api/users/${
-                                          userData.id
-                                      }/avatar?jwt=${localStorage.getItem("jwt")}`
+                                    ? `http://localhost:5000/api/Users/${userData.id}/avatar`
                                     : ""
                             }
                             variant="square"
@@ -268,14 +255,12 @@ const UserProfilePage = () => {
                     {!editMode ? (
                         <>
                             {
-                                // TODO implement.
                                 <ProfileCards
                                     registrationDate={
                                         userData.registrationDate !== undefined
                                             ? moment.utc(userData.registrationDate).format("DD-MM-YYYY")
                                             : "-"
                                     }
-                                    //TODO delete or complete
                                     eventsCount={eventsCount ? eventsCount : "-"}
                                     rating={rating}
                                 />
@@ -363,8 +348,6 @@ const UserProfilePage = () => {
                                             >
                                                 Посещённые мероприятия
                                             </Typography>
-
-                                            {/* TODO put in conteyner */}
                                             {userData.events.map((event) => (
                                                 <UserEvent key={event.id} event={event} />
                                             ))}
