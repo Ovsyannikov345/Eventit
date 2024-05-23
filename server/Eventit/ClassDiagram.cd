@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Eventit.Controllers.CompaniesController">
+    <Position X="0.75" Y="3.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>IAAAEAAQAAIARAAAAAABAAAAAgAAAAAAAAAEQAAIAAA=</HashCode>
+      <FileName>Controllers\CompaniesController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Eventit.Controllers.EventReviewsController">
+    <Position X="4.75" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAARAAAAAABAAAAAAAAAAABAAAAABAAAAA=</HashCode>
+      <FileName>Controllers\EventReviewsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Eventit.Controllers.EventsController">
+    <Position X="5.25" Y="3.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAgABAAABgAAAABBAAAAAAAAAAAAAAABAICACQA=</HashCode>
+      <FileName>Controllers\EventsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Eventit.Controllers.MessagesController">
+    <Position X="0.75" Y="7.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABEAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\MessagesController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Eventit.Controllers.NotificationsController">
+    <Position X="3" Y="7.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAEAABAAAAAAAAAAAAAAAAAAIAAIA=</HashCode>
+      <FileName>Controllers\NotificationsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Eventit.Controllers.PlaceReviewsController">
+    <Position X="7.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAAABAAABAAAAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>Controllers\PlaceReviewsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Eventit.Controllers.PlacesController">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAADAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\PlacesController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Eventit.Controllers.SupportRequestsController">
+    <Position X="5.25" Y="7.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAABAABAAAAAAAQAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\SupportRequestsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Eventit.Controllers.UsersController">
+    <Position X="3" Y="3.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>IgAQAAAQAQAABAAAAAABBAAAAAAgAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\UsersController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
