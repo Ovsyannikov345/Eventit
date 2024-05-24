@@ -210,7 +210,7 @@ const CompanyEventDetailsPage = () => {
                 declineHandler={() => setIsConfirmationModalOpen(false)}
             />
             <PlaceReviewModal
-                isOpen={event?.isFinished && !isPlaceGraded && isPlaceReviewModalOpen}
+                isOpen={event?.isFinished && event?.place !== null && !isPlaceGraded && isPlaceReviewModalOpen}
                 onClose={() => setIsPlaceReviewModalOpen(false)}
                 acceptHandler={sendPlaceReview}
             />
