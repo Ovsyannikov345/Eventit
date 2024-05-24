@@ -348,9 +348,18 @@ const UserProfilePage = () => {
                                             >
                                                 Посещённые мероприятия
                                             </Typography>
-                                            {userData.events.map((event) => (
-                                                <UserEvent key={event.id} event={event} />
-                                            ))}
+                                            <Grid
+                                                container
+                                                item
+                                                justifyContent={"flex-start"}
+                                                rowGap={"10px"}
+                                                gap={"5px"}
+                                                pr={"10px"}
+                                            >
+                                                {userData.events.map((event) => (
+                                                    <UserEvent key={event.id} event={event} />
+                                                ))}
+                                            </Grid>
                                         </>
                                     ) : (
                                         <Typography
