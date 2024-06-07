@@ -5,10 +5,6 @@ const validateUserEditData = (values) => {
         errors.firstName = "Обязательное поле";
     }
 
-    if (!values.patronymic) {
-        errors.patronymic = "Обязательное поле";
-    }
-
     if (!values.lastName) {
         errors.lastName = "Обязательное поле";
     }
